@@ -30,6 +30,26 @@ public interface DonarsRepository extends JpaRepository<Donar, Integer> {
     "ORDER BY SUM(vpl.amount) DESC")
   List<DonarDto> findDonars(Pageable pageable);
 
+  @Query("SELECT new com.andhraempower.dto.DonarDto( " +
+    "d.id, d.firstName, d.lastName, d.phoneNumber, d.email, d.description, d.address, vl.id, vl.name, ml.id, ml.name, dl.id, dl.name, SUM(vpl.amount), " +
+    "(SELECT sc.categoryName FROM SponsorCategory sc " +
+    "WHERE SUM(vpl.amount) >= sc.minAmount " +
+    "AND (sc.maxAmount IS NULL OR SUM(vpl.amount) <= sc.maxAmount) " +
+    "AND sc.minAmount = (SELECT MAX(sc2.minAmount) FROM SponsorCategory sc2 " +
+    "WHERE SUM(vpl.amount) >= sc2.minAmount) " +
+    ") " +
+    ") " +
+    "FROM VillageProjectDonar vpl " +
+    "JOIN Donar d ON vpl.donar.id = d.id " +
+    "LEFT JOIN VillageLookup vl ON d.village.id = vl.id " +
+    "LEFT JOIN MandalLookup ml ON vl.mandalId = ml.id " +
+    "LEFT JOIN DistrictLookup dl ON ml.districtId = dl.id "+
+    "WHERE (d.id = :donarId)  "+
+    "GROUP BY d.id, d.firstName, d.lastName, d.phoneNumber, d.email, d.address, vl.id, vl.name, ml.id, ml.name, dl.id, dl.name ")
+  DonarDto findDonarInfo(
+    @Param("donarId") Long donarId
+  );
+
   @Query("SELECT new com.andhraempower.dto.ProjectInfoDto( " +
     "vpd.donar.id, vpd.memoryOf, vpd.modeOfPayment, vpd.amount, "+ 
     "vp.id, cl.name, ptl.description, "+ 
@@ -44,7 +64,7 @@ public interface DonarsRepository extends JpaRepository<Donar, Integer> {
     "LEFT JOIN DistrictLookup dl ON ml.districtId = dl.id "+
     "WHERE (vpd.donar.id = :donarId) " +
     "ORDER BY vp.id DESC")
-  List<ProjectInfoDto> findDonar(
+  List<ProjectInfoDto> findProjectInfo(
     @Param("donarId") Long donarId
   );
 

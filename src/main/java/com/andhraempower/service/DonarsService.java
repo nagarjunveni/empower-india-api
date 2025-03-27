@@ -1,6 +1,7 @@
 package com.andhraempower.service;
 
 import com.andhraempower.dao.LookupDAO;
+import com.andhraempower.dto.DonarAndProjectInfoDto;
 import com.andhraempower.dto.DonarDto;
 import com.andhraempower.dto.ProjectInfoDto;
 import com.andhraempower.entity.*;
@@ -94,7 +95,10 @@ public List<DonarDto> getDonars(Integer topN) {
         return donarsRepository.findDonars(pageable);
     }
 
-    public List<ProjectInfoDto> getDonar(Long donarId) {
-        return donarsRepository.findDonar(donarId);
+    public DonarAndProjectInfoDto getDonarInfo(Long donarId) {
+        DonarAndProjectInfoDto donarAndProjectInfo = new DonarAndProjectInfoDto();
+        donarAndProjectInfo.setDonarInfo(donarsRepository.findDonarInfo(donarId));
+        donarAndProjectInfo.setProjectsInfo(donarsRepository.findProjectInfo(donarId));
+         return donarAndProjectInfo;
     }
 }
