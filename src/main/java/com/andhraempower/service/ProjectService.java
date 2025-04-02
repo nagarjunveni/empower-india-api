@@ -242,4 +242,14 @@ public class ProjectService {
                     throw new EntityNotFoundException("Project not found for the project id " + projectId);
                 });
     }
+
+
+    public ProjectResponseDto getProjectById(String id) {
+        log.info("searchProjectBy ID {}", id);
+        ProjectResponseDto searchedProject = projectRepository.findByProjectId(Long.valueOf(id));
+        if(searchedProject != null){
+            setAdditonalDetailsToProjectResponse(searchedProject);
+        }
+        return  searchedProject;
+    }
 }
