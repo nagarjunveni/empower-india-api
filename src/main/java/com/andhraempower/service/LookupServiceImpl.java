@@ -3,6 +3,7 @@ package com.andhraempower.service;
 import java.util.List;
 import java.util.Map;
 
+import com.andhraempower.dto.VillageAndMandalAndDistrictInfoDto;
 import com.andhraempower.entity.*;
 import org.springframework.stereotype.Service;
 
@@ -65,6 +66,16 @@ public class LookupServiceImpl implements LookupService {
                 "cultivationCrops", this.lookupDAO.getCultivationCropsLookup(),
                 "liveStock", this.lookupDAO.getLiveStockLookUp(),
                 "institutions", this.lookupDAO.getInstitutionsLookups());
+    }
+
+    @Override
+    public List<VillageAndMandalAndDistrictInfoDto> getVillageAndMandalAndDistrictInfo(Integer page, Integer pageSize) {
+        return List.of();
+    }
+
+    @Override
+    public long getTotalVillageCount() {
+        return 0;
     }
 
 
