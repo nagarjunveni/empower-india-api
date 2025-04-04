@@ -33,4 +33,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findUsers(@Param("searchTerm") String searchTerm,
                            @Param("districtId") Long districtId,
                            @Param("roleId") Long roleId);
+
+    Optional<User> findByEmailOrPhoneNumber(String email, String phone);
 }

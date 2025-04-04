@@ -11,7 +11,6 @@ import com.andhraempower.exception.UserNotFoundException;
 import com.andhraempower.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +18,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +26,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     public UserResponseDto loadUserWithRoles(LoginRequestDto loginRequestDto) {
         Optional<User> userOptional = userRepository.findByUserName(loginRequestDto.getUserName());
@@ -139,15 +142,27 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public List<UserResponseDto> getAllUsers(String searchTerm,Long districtId, Long roleId) {
+    public List<UserResponseDto> getAllUsers(String searchTerm, Long districtId, Long roleId) {
         return userRepository.findUsers(searchTerm, districtId, roleId).stream().map(UserResponseDto::new).collect(Collectors.toList());
     }
 
-    public void deactivateUser(Long userId) {
+    public void deactivateUser(Long userId, Integer isActive) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User does not exist with ID: " + userId));
 
-        user.setIsEnabled(0); // Soft delete: setting isEnabled
+        user.setIsEnabled(isActive);
         userRepository.save(user);
+    }
+
+    public void findByEmailOrPhone(String emailOrPhone) {
+        User user = userRepository.findByEmailOrPhoneNumber(emailOrPhone, emailOrPhone).orElseThrow(() -> new UserNotFoundException("User not found"));
+        String token = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 10);
+        user.setPassword(token);
+        emailService.sendEmail(user);
+    }
+
+    public UserResponseDto resetPassword(String emailOrPhone) {
+        User user = userRepository.findByEmailOrPhoneNumber(emailOrPhone, emailOrPhone).orElseThrow(() -> new UserNotFoundException("User not found"));
+        return new UserResponseDto(user);
     }
 }

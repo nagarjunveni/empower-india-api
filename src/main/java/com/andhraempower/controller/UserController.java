@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin
 @RestController
@@ -28,23 +29,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Operation(summary = "Create a new user without roles.")
-    @PostMapping("/create")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.BAD_REQUEST_CODE, description = EmpowerConstants.BAD_REQUEST_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.UNAUTHORIZED_CODE, description = EmpowerConstants.UNAUTHORIZED_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.FORBIDDEN_CODE, description = EmpowerConstants.FORBIDDEN_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
-    })
-    public ResponseEntity<UserResponseDto> createUser(@RequestBody UserRequestDto userRequestDto) throws IOException {
-        User user = userService.createUser(userRequestDto, null);
-        UserResponseDto response = new UserResponseDto(user);
-        return ResponseEntity.ok(response);
-    }
-
-    @Operation(summary = "Create a new user with profile photo")
+    @Operation(summary = "Create a new user or update with profile photo")
     @PostMapping()
     @ApiResponses(value = {
             @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
@@ -54,7 +39,7 @@ public class UserController {
             @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
             @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
     })
-    public ResponseEntity<UserResponseDto> createUserWithPhoto(
+    public ResponseEntity<UserResponseDto> createUser(
             @RequestPart("user") UserRequestDto userRequestDto,
             @RequestPart(value = "profilePhoto", required = false) MultipartFile file) throws IOException {
 
@@ -64,23 +49,6 @@ public class UserController {
         } else {
             user = userService.createUser(userRequestDto, file);
         }
-        UserResponseDto response = new UserResponseDto(user);
-        return ResponseEntity.ok(response);
-    }
-
-
-    @Operation(summary = "Create a new user without roles.")
-    @PutMapping()
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.BAD_REQUEST_CODE, description = EmpowerConstants.BAD_REQUEST_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.UNAUTHORIZED_CODE, description = EmpowerConstants.UNAUTHORIZED_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.FORBIDDEN_CODE, description = EmpowerConstants.FORBIDDEN_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
-    })
-    public ResponseEntity<UserResponseDto> updateUser(@RequestBody UserRequestDto userRequestDto) throws IOException {
-        User user = userService.createUser(userRequestDto, null);
         UserResponseDto response = new UserResponseDto(user);
         return ResponseEntity.ok(response);
     }
@@ -96,14 +64,14 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Resource not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
-    public ResponseEntity<List<UserResponseDto>> getUsers(@RequestParam(required = false) String searchTerm,@RequestParam(required = false) Long districtId, @RequestParam(required = false) Long roleId) {
+    public ResponseEntity<List<UserResponseDto>> getUsers(@RequestParam(required = false) String searchTerm, @RequestParam(required = false) Long districtId, @RequestParam(required = false) Long roleId) {
 
-        List<UserResponseDto> userResponseDtos = userService.getAllUsers(searchTerm,districtId, roleId);
+        List<UserResponseDto> userResponseDtos = userService.getAllUsers(searchTerm, districtId, roleId);
         return ResponseEntity.ok(userResponseDtos);
     }
 
     @Operation(summary = "Deactivate a user (soft delete).")
-    @PutMapping("/{userId}")
+    @PutMapping("/users/{userId}/status")
     @ApiResponses(value = {
             @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
             @ApiResponse(responseCode = EmpowerConstants.BAD_REQUEST_CODE, description = EmpowerConstants.BAD_REQUEST_CODE_DESC),
@@ -112,9 +80,44 @@ public class UserController {
             @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
             @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
     })
-    public ResponseEntity<String> deactivateUser(@PathVariable Long userId) {
 
-        userService.deactivateUser(userId);
-        return ResponseEntity.ok("Successfully deactivated user.");
+    public ResponseEntity<String> updateUserStatus(@PathVariable Long userId, @RequestParam Integer isActive) {
+        if (isActive != 0 && isActive != 1) {
+            return ResponseEntity.badRequest().body("Invalid status value. Use 0 for inactive, 1 for active.");
+        }
+        userService.deactivateUser(userId, isActive);
+        return ResponseEntity.ok("User status updated successfully.");
+    }
+
+    @Operation(summary = "Request password reset via email or phone")
+    @PostMapping("/forgot-password")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = "Reset link sent successfully"),
+            @ApiResponse(responseCode = EmpowerConstants.BAD_REQUEST_CODE, description = "Invalid request"),
+            @ApiResponse(responseCode = EmpowerConstants.UNAUTHORIZED_CODE, description = "Unauthorized access"),
+            @ApiResponse(responseCode = EmpowerConstants.FORBIDDEN_CODE, description = "Forbidden request"),
+            @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = "User not found"),
+            @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = "Unexpected server error")
+    })
+    public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> request) {
+        String emailOrPhone = request.get("identifier");
+        userService.findByEmailOrPhone(emailOrPhone);
+        return ResponseEntity.ok("Your password has been reset and sent to your email.");
+    }
+
+
+    @Operation(summary = "Reset password")
+    @PostMapping("/reset-password")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = "Reset link sent successfully"),
+            @ApiResponse(responseCode = EmpowerConstants.BAD_REQUEST_CODE, description = "Invalid request"),
+            @ApiResponse(responseCode = EmpowerConstants.UNAUTHORIZED_CODE, description = "Unauthorized access"),
+            @ApiResponse(responseCode = EmpowerConstants.FORBIDDEN_CODE, description = "Forbidden request"),
+            @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = "User not found"),
+            @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = "Unexpected server error")
+    })
+    public ResponseEntity<UserResponseDto> resetPassword(@RequestBody Map<String, String> request) {
+        String emailOrPhone = request.get("identifier");
+        return ResponseEntity.ok(userService.resetPassword(emailOrPhone));
     }
 }
