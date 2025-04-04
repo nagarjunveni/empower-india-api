@@ -65,7 +65,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'empowerindia'
+          app-name: 'empowerindia-api'
           slot-name: 'Production'
           package: '*0.0.1-SNAPSHOT.jar'
           
