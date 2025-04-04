@@ -69,13 +69,13 @@ public class LookupServiceImpl implements LookupService {
     }
 
     @Override
-    public List<VillageAndMandalAndDistrictInfoDto> getVillageAndMandalAndDistrictInfo(Integer page, Integer pageSize) {
-        return List.of();
+    public List<VillageAndMandalAndDistrictInfoDto> getVillageAndMandalAndDistrictInfo(Integer page,Integer pageSize) {
+        return this.lookupDAO.getVillageAndMandalAndDistrictInfo(page,pageSize);
     }
 
     @Override
     public long getTotalVillageCount() {
-        return 0;
+        return this.lookupDAO.getTotalVillageCount();
     }
 
 
