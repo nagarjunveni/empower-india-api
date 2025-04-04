@@ -27,7 +27,7 @@ public class EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
             helper.setTo(user.getEmail());
-            helper.setSubject("Password Recovery");
+            helper.setSubject("Team Empower Andhra: Password Reset Request");
 
             Context context = new Context();
             context.setVariable("userFirstName", user.getFirstName());
