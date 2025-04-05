@@ -20,11 +20,11 @@ public class DonarDto {
     private String address;
     private Double amount;
     private String category;
-    private Integer villageId;
+    private Long villageId;
     private String villageName;
-    private Integer mandalId;
+    private Long mandalId;
     private String mandalName;
-    private Integer districtId;
+    private Long districtId;
     private String districtName;
     private String memoryOf;
     private String modeOfPayment;
@@ -33,9 +33,9 @@ public class DonarDto {
 
     public DonarDto(Long id, String firstName, String lastName, String phoneNumber, String email, String description,
                     String address,
-                    Integer villageId, String villageName,
-                    Integer mandalId, String mandalName,
-                    Integer districtId, String districtName,
+                    Long villageId, String villageName,
+                    Long mandalId, String mandalName,
+                    Long districtId, String districtName,
                     Double amount, String category) {
         this.id = id;
         this.firstName = firstName;

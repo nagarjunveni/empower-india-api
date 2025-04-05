@@ -16,10 +16,10 @@ public class ProjectInfoDto {
     private String projectCategory;
     private String projectType;
     private String location;
-    private Integer villageId;
+    private Long villageId;
     private String villageName;
-    private Integer mandalId;
+    private Long mandalId;
     private String mandalName;
-    private Integer districtId;
+    private Long districtId;
     private String districtName;
 }

@@ -31,7 +31,9 @@ public class VillageDetailsService {
 
     public VillageDemographics updateVillageDetails(VillageDemographics updatedVillage) {
 
-        VillageDemographics existingVillage = villageDetailsRepository.findById(updatedVillage.getId());
+        Optional<VillageDemographics> entityOptional = villageDetailsRepository.findById(updatedVillage.getId());
+
+        VillageDemographics existingVillage = entityOptional.orElse(null);
 
         if (existingVillage == null) {
             throw new EntityNotFoundException("Village not found with id: " + updatedVillage.getId());

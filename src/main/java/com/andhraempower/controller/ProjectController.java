@@ -1,12 +1,7 @@
 package com.andhraempower.controller;
 
 import com.andhraempower.constants.EmpowerConstants;
-import com.andhraempower.dto.ProjectRequestDto;
-import com.andhraempower.dto.ProjectResponseDto;
-import com.andhraempower.dto.ProjectStatusSteps;
-import com.andhraempower.dto.ProjectsCountDto;
-import com.andhraempower.entity.ProjectStatusLookup;
-import com.andhraempower.entity.ProjectStatusTracking;
+import com.andhraempower.dto.*;
 import com.andhraempower.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import java.util.List;
 import java.util.Objects;
 
 @CrossOrigin
@@ -241,6 +235,39 @@ public class ProjectController {
             return ResponseEntity.badRequest().body("Invalid number: " + projectId);
         } catch (Exception e){
             log.error("Error while fetching project {}", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * GET API - Fetch all projects
+     */
+    @GetMapping(value ="/districts-mandal-villages",produces = {EmpowerConstants.APPLICATION_JSON, EmpowerConstants.TEXT_PLAIN})
+    @Operation(summary = "Retrieves all districts, Mandals, Villages with project status.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.BAD_REQUEST_CODE, description = EmpowerConstants.BAD_REQUEST_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.UNAUTHORIZED_CODE, description = EmpowerConstants.UNAUTHORIZED_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.FORBIDDEN_CODE, description = EmpowerConstants.FORBIDDEN_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
+    })
+    public ResponseEntity<Page<DistrictMandalVillageProjectInfoDto>> getDistrictMandalVillageProjects(@RequestParam(name = "districtId", required = false) Long districtId
+            , @RequestParam(name = "mandalId", required = false) Long mandalId
+            , @RequestParam(name = "typeId", required = false) Long typeId,
+                                                                                                      @RequestParam(name="status", required = false) String status,
+                                                                                                      @RequestParam(name = "page", defaultValue = "0") int page,
+                                                                                                      @RequestParam(name = "size", defaultValue = "10") int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size, Sort.unsorted());
+            Page<DistrictMandalVillageProjectInfoDto> projects;
+
+                projects = projectService.getDistrictMandalVillageProjects(districtId,mandalId,typeId,status,pageable);
+
+            log.debug("Projects Page: {}", projects);
+            return ResponseEntity.ok(projects);
+        }catch (Exception e){
+            log.error("Error while fetching projects", e);
             return ResponseEntity.internalServerError().build();
         }
     }

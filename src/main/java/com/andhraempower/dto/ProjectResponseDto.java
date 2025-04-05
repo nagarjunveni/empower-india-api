@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
-
 public class ProjectResponseDto {
     private Long id;
     private String projectCategory;
@@ -25,11 +24,11 @@ public class ProjectResponseDto {
     private String createdBy;
     private String lastUpdatedBy;
     private String villageName;
-    private int villageId;
+    private Long villageId;
     private String mandalName;
-    private int mandalId;
+    private Long mandalId;
     private String districtName;
-    private int districtId;
+    private Long districtId;
     private String pinCode;
     private Double remainingRequiredAmount;
     private List<DonarDto> sponsersList;
@@ -45,8 +44,8 @@ public class ProjectResponseDto {
     public ProjectResponseDto(Long id, String projectCategory, Integer projectCategoryId, String projectType
             , Long projectTypeId, String status, String location, Double latitude, Double longitude, Double projectEstimation
             , Double governmentShare, Double publicShare, Boolean isNew, String description, String createdBy
-            , String lastUpdatedBy, String villageName, int villageId, String mandalName, int mandalId, String districtName
-            , int districtId, String pinCode, boolean isCommitteeAdded, boolean isBankDetailsAdded, boolean isEstimationAdded,LocalDate estimateStartDate,
+            , String lastUpdatedBy, String villageName, Long villageId, String mandalName, Long mandalId, String districtName
+            , Long districtId, String pinCode, boolean isCommitteeAdded, boolean isBankDetailsAdded, boolean isEstimationAdded,LocalDate estimateStartDate,
              LocalDate estimateEndDate, LocalDate actualStartDate, LocalDate actualEndDate,String statusCode
     ) {
         this.id = id;
@@ -86,7 +85,7 @@ public class ProjectResponseDto {
             , Long projectTypeId, String status, String location, Double latitude, Double longitude
             , Double projectEstimation, Double governmentShare, Double publicShare, Boolean isNew
             , String description, String createdBy, String lastUpdatedBy, String villageName
-            , int villageId, String mandalName, int mandalId, String districtName, int districtId, String pinCode, Double remainingRequiredAmount
+            , Long villageId, String mandalName, Long mandalId, String districtName, Long districtId, String pinCode, Double remainingRequiredAmount
             ,LocalDate estimateStartDate, LocalDate estimateEndDate, LocalDate actualStartDate, LocalDate actualEndDate,String statusCode) {
         this.id = id;
         this.projectCategory = projectCategory;
@@ -118,4 +117,5 @@ public class ProjectResponseDto {
         this.actualEndDate = actualEndDate;
         this.statusCode = statusCode;
     }
+
 }

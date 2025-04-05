@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.andhraempower.dto.ProjectCategoriesDto;
-import com.andhraempower.dto.VillageAndMandalAndDistrictInfoDto;
 import com.andhraempower.entity.*;
 
 public interface LookupService {
@@ -25,7 +24,4 @@ public interface LookupService {
 
     Map<String, List<?>> getVillageLooksUps();
 
-    List<VillageAndMandalAndDistrictInfoDto> getVillageAndMandalAndDistrictInfo(Integer page, Integer pageSize);
-
-    long getTotalVillageCount();
 }

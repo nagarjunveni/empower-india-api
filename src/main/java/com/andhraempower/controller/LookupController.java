@@ -93,49 +93,5 @@ public class LookupController {
         return ResponseEntity.ok().body(lookupService.getVillageLooksUps());
     }
 
-    @GetMapping(value ="/villages-mandal-districts",produces = {EmpowerConstants.APPLICATION_JSON})
-    @Operation(summary = "List of villages,Mandals and Districts")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.BAD_REQUEST_CODE, description = EmpowerConstants.BAD_REQUEST_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.UNAUTHORIZED_CODE, description = EmpowerConstants.UNAUTHORIZED_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.FORBIDDEN_CODE, description = EmpowerConstants.FORBIDDEN_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
-    })
-    public ResponseEntity<Object> getVillageAndMandalAndDistrictInfo(@RequestParam("page") Integer page,@RequestParam("pageSize") Integer pageSize) {
-        try {
-            if (page == null || page <= 0 ) {
-                return ResponseEntity.badRequest().body("Page not equal to zero : "+page);
-            }else if(pageSize == null || pageSize <= 0){
-                return ResponseEntity.badRequest().body("Page Size not equal to zero : "+pageSize);
-            }
-            return ResponseEntity.ok().body(lookupService.getVillageAndMandalAndDistrictInfo(page,pageSize));
-        }catch (NumberFormatException e) {
-            return ResponseEntity.badRequest().body("Invalid number: ");
-        } catch (Exception e){
-            return ResponseEntity.internalServerError().build();
-        }
-
-    }
-
-    @GetMapping(value ="/villages-count",produces = {EmpowerConstants.APPLICATION_JSON})
-    @Operation(summary = "Total Villages Count")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.BAD_REQUEST_CODE, description = EmpowerConstants.BAD_REQUEST_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.UNAUTHORIZED_CODE, description = EmpowerConstants.UNAUTHORIZED_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.FORBIDDEN_CODE, description = EmpowerConstants.FORBIDDEN_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
-    })
-    public ResponseEntity<Long> getTotalVillageCount() {
-        try {
-            return ResponseEntity.ok().body(lookupService.getTotalVillageCount());
-        } catch (Exception e){
-            return ResponseEntity.internalServerError().build();
-        }
-
-    }
 }
 

@@ -1,32 +1,27 @@
 package com.andhraempower.dto;
 
-import lombok.*;
-
-import java.time.LocalDate;
+import lombok.Data;
 
 @Data
-@NoArgsConstructor
-@ToString
-public class VillageAndMandalAndDistrictInfoDto {
-    @NonNull
-    private Integer districtId;
-    private String districtName;
-    @NonNull
-    private Integer mandalId;
-    private String mandalName;
-    @NonNull
-    private Integer villageId;
-    private String villageName;
+public class DistrictMandalVillageProjectInfoDto {
 
-    private Integer villageProjectId;
-    private Long inProgress;
+    private String districtName;
+    private Long districtId;
+    private String mandalName;
+    private Long mandalId;
+    private String villageName;
+    private Long villageId;
+    private Long villageProjectId;
+    private Long inprogress;
     private Long completed;
     private Long waitingSponsers;
     private Long approvals;
-    private Integer villageDemographicsId;
+    private Long villageDemographicsId;
     private Integer totalPopulation;
     private Integer scMalePopulation;
     private Integer scFemalePopulation;
+    private Integer stMalePopulation;
+    private Integer stFemalePopulation;
     private Integer bcMalePopulation;
     private Integer bcFemalePopulation;
     private Integer ocMalePopulation;
@@ -34,20 +29,20 @@ public class VillageAndMandalAndDistrictInfoDto {
     private Integer otherMalePopulation;
     private Integer otherFemalePopulation;
 
-
-    public VillageAndMandalAndDistrictInfoDto(Integer districtId,String districtName, Integer mandalId,String mandalName,Integer villageId,String villageName,Integer villageProjectId,
-                                              Long inProgress,Long completed, Long waitingSponsers,Long approvals,Integer villageDemographicsId,Integer totalPopulation,
-                                              Integer scMalePopulation,Integer scFemalePopulation,Integer bcMalePopulation,Integer bcFemalePopulation,Integer ocMalePopulation,
-                                              Integer ocFemalePopulation,Integer otherMalePopulation,Integer otherFemalePopulation
-        ){
+    public DistrictMandalVillageProjectInfoDto(Long districtId, String districtName, Long mandalId, String mandalName, Long villageId, String villageName,
+                                               Long villageProjectId, Long inprogress, Long completed, Long waitingSponsers, Long approvals
+                            , Long villageDemographicsId, Integer totalPopulation, Integer scMalePopulation, Integer scFemalePopulation
+                            , Integer stMalePopulation, Integer stFemalePopulation, Integer bcMalePopulation, Integer bcFemalePopulation, Integer ocMalePopulation,
+                                               Integer ocFemalePopulation, Integer otherMalePopulation, Integer otherFemalePopulation
+    ) {
+        this.districtName = districtName;
         this.districtId = districtId;
         this.mandalId = mandalId;
-        this.villageId = villageId;
-        this.districtName = districtName;
         this.mandalName = mandalName;
+        this.villageId = villageId;
         this.villageName = villageName;
         this.villageProjectId = villageProjectId;
-        this.inProgress = inProgress;
+        this.inprogress = inprogress;
         this.completed = completed;
         this.waitingSponsers = waitingSponsers;
         this.approvals = approvals;
@@ -55,14 +50,13 @@ public class VillageAndMandalAndDistrictInfoDto {
         this.totalPopulation = totalPopulation;
         this.scMalePopulation = scMalePopulation;
         this.scFemalePopulation = scFemalePopulation;
+        this.stMalePopulation = stMalePopulation;
+        this.stFemalePopulation = stFemalePopulation;
         this.bcMalePopulation = bcMalePopulation;
         this.bcFemalePopulation = bcFemalePopulation;
         this.ocMalePopulation = ocMalePopulation;
         this.ocFemalePopulation = ocFemalePopulation;
         this.otherMalePopulation = otherMalePopulation;
         this.otherFemalePopulation = otherFemalePopulation;
-
-
-
     }
 }

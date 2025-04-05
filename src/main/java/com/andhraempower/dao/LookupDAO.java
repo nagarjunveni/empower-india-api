@@ -3,7 +3,6 @@ package com.andhraempower.dao;
 import java.util.List;
 import java.util.Optional;
 
-import com.andhraempower.dto.VillageAndMandalAndDistrictInfoDto;
 import com.andhraempower.entity.*;
 
 public interface LookupDAO {
@@ -37,7 +36,4 @@ public interface LookupDAO {
 
     List<InstitutionsLookups> getInstitutionsLookups();
 
-    List<VillageAndMandalAndDistrictInfoDto> getVillageAndMandalAndDistrictInfo(Integer page, Integer pageSIze);
-
-    long getTotalVillageCount();
 }

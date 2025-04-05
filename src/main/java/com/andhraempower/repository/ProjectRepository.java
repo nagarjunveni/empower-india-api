@@ -1,5 +1,6 @@
 package com.andhraempower.repository;
 
+import com.andhraempower.dto.DistrictMandalVillageProjectInfoDto;
 import com.andhraempower.dto.ProjectResponseDto;
 import com.andhraempower.entity.VillageProject;
 import org.springframework.data.domain.Page;
@@ -87,6 +88,27 @@ public interface ProjectRepository extends JpaRepository<VillageProject, Long> {
     ProjectResponseDto findByProjectId(Long id);
 
 
-
-
+    @Query("SELECT new com.andhraempower.dto.DistrictMandalVillageProjectInfoDto(" +
+            "dl.id ,dl.name,ml.id,ml.name, vl.id,vl.name,  " +
+            "vp.id, " +
+            "COUNT(CASE WHEN vp.statusCode like upper('%wip%') THEN 1 END) , " +
+            "COUNT(CASE WHEN vp.statusCode like upper('%completed%') THEN 1 END) , " +
+            "COUNT(CASE WHEN vp.statusCode like upper('%wfd%') THEN 1 END) , " +
+            "COUNT(CASE WHEN vp.statusCode like upper('%new%') THEN 1 END) ," +
+            "vd.id " +
+            ", vd.totalPopulation " +
+            ",vd.scMale, vd.scFemale,vd.stMale,vd.stFemale, vd.bcMale,vd.bcFemale, " +
+            " vd.ocMale, vd.ocFemale, vd.otherMale, vd.otherFemale ) "+
+            "FROM DistrictLookup dl "+
+            "LEFT join MandalLookup ml on dl.id = ml.districtId "+
+            "LEFT join VillageLookup vl on ml.id =vl.mandalId " +
+            "LEFT join VillageProject vp on vl.id = vp.village.id " +
+            "LEFT join VillageDemographics vd on vl.id = vd.id " +
+            "WHERE (:districtId IS NULL OR dl.id = :districtId) " +
+            "AND (:mandalId IS NULL OR ml.id = :mandalId) " +
+            "AND (:projectTypeId IS NULL OR vp.projectTypeLookup.id = :projectTypeId) " +
+            "AND (:statusCode IS NULL OR vp.statusCode  = :statusCode ) " +
+            "group by dl.id,ml.id,vl.id,vp.id,vd.id")
+    Page<DistrictMandalVillageProjectInfoDto> getDistrictMandalVillageProjects(@Param("districtId") Long districtId, @Param("mandalId") Long mandalId
+            , @Param("projectTypeId") Long projectTypeId, @Param("statusCode") String statusCode, Pageable pageable);
 }

@@ -18,7 +18,7 @@ public class VillageDemographics {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer id;
+    private Long id;
 
     @Column(name = "village_id")
     private Integer villageId;

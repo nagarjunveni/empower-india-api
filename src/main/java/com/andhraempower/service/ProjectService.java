@@ -252,4 +252,10 @@ public class ProjectService {
         }
         return  searchedProject;
     }
+
+    public Page<DistrictMandalVillageProjectInfoDto> getDistrictMandalVillageProjects(Long districtId, Long mandalId, Long projectTypeId, String status, Pageable pageable) {
+        log.info("Fetching all projects details.");
+        Page<DistrictMandalVillageProjectInfoDto> allProjects = projectRepository.getDistrictMandalVillageProjects(districtId,mandalId,projectTypeId,status,pageable);
+        return allProjects;
+    }
 }
