@@ -33,6 +33,8 @@ public class UserResponseDto {
 
     private Integer isEnabled;
 
+    private String userName;
+
     public UserResponseDto(User user) {
         this.id = user.getId();
         this.firstName = user.getFirstName();
@@ -50,6 +52,7 @@ public class UserResponseDto {
         this.profilePhoto = user.getProfilePhoto();
         this.districtId = user.getDistrictId();
         this.isEnabled = user.getIsEnabled();
+        this.userName = user.getUserName();
 
     }
 
