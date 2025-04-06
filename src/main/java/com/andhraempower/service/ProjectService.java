@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.andhraempower.constants.EmpowerConstants.USER_ADMIN;
 import static com.andhraempower.constants.ProjectWorkFlowStatus.ESTIMATION_ADDED;
@@ -36,6 +37,9 @@ public class ProjectService {
     private final StatusChangePublisher statusChangePublisher;
     @Autowired
     private VillageProjectDonarRepository villageProjectDonarRepository;
+
+    @Autowired
+    private CommitteeService committeeService;
 
 
     public void saveProject(ProjectRequestDto projectRequestDto) {
@@ -104,6 +108,35 @@ public class ProjectService {
             projectResponseDto.setRemainingRequiredAmount(projectResponseDto.getProjectEstimation());
             projectResponseDto.setSponsersList(new ArrayList<>());
         }
+
+        List<CommitteeMembers> committeeMembersList =  committeeService.getCommittee(projectResponseDto.getId());
+
+        if (committeeMembersList != null) {
+            projectResponseDto.setCommitteeMembersList(
+                    committeeMembersList.stream()
+                            .map(this::convertEntityToDto)
+                            .collect(Collectors.toList())
+            );
+        } else {
+            projectResponseDto.setCommitteeMembersList(new ArrayList<>());
+        }
+
+    }
+
+    public CommitteeMembersDto convertEntityToDto(CommitteeMembers committeeMember) {
+        CommitteeMembersDto dto = new CommitteeMembersDto();
+
+        dto.setId(committeeMember.getId());
+        dto.setFirstName(committeeMember.getFirstName());
+        dto.setLastName(committeeMember.getLastName());
+        dto.setFatherName(committeeMember.getFatherName());
+        dto.setPhoneNumber(committeeMember.getPhoneNumber());
+        dto.setEmail(committeeMember.getEmail());
+        dto.setAddress(committeeMember.getAddress());
+        dto.setRecordType(committeeMember.getRecordType());
+        dto.setVillageId(committeeMember.getVillageId());
+
+        return dto;
     }
 
     public Page<ProjectResponseDto> searchProjects(Long districtCode, Long mandalCode, Long villageCode,Long id, String statusCode, Pageable pageable) {

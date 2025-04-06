@@ -1,5 +1,7 @@
 package com.andhraempower.service;
 
+import com.andhraempower.dto.ProjectResponseDto;
+import com.andhraempower.dto.VillageDemographicsDTO;
 import com.andhraempower.entity.*;
 import com.andhraempower.repository.VillageDetailsRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,6 +20,9 @@ public class VillageDetailsService {
 
     @Autowired
     private VillageDetailsRepository villageDetailsRepository;
+
+    @Autowired
+    private ProjectService projectService;
 
     public VillageDemographics getVillageDetails(Integer villageId) {
         return villageDetailsRepository.findByVillageId(villageId);
@@ -112,7 +117,7 @@ public class VillageDetailsService {
             existingVillage.setLongitude(updatedVillage.getLongitude());
         }
 
-        if (updatedVillage.getPinCode()!= null) {
+        if (updatedVillage.getPinCode() != null) {
             existingVillage.setPinCode(updatedVillage.getPinCode());
         }
 
@@ -264,6 +269,20 @@ public class VillageDetailsService {
     }
 
     public Page<VillageDemographics> findByDistrictId(Long districtId, Pageable pageable) {
-       return villageDetailsRepository.findByDistrictId(districtId, pageable);
+        return villageDetailsRepository.findByDistrictId(districtId, pageable);
+    }
+
+    public VillageDemographicsDTO villageProjectDetails(Integer villageId) {
+
+        VillageDemographics villageDemographics = villageDetailsRepository.findByVillageId(villageId);
+
+        VillageDemographicsDTO villageDemographicsDTO = VillageDemographicsDTO.fromEntity(villageDemographics);
+
+        Page<ProjectResponseDto> projectResponseDtos = projectService.searchProjects(null, null, Long.valueOf(villageDemographicsDTO.getVillageId()), null, null, null);
+        if (!projectResponseDtos.isEmpty()) {
+            villageDemographicsDTO.setProjectResponseList(projectResponseDtos.getContent());
+        }
+
+        return villageDemographicsDTO;
     }
 }

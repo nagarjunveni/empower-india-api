@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import static com.andhraempower.constants.EmpowerConstants.USER_ADMIN;
 import static com.andhraempower.constants.ProjectWorkFlowStatus.SPONSOR_ADDED;
@@ -49,8 +51,13 @@ public class DonarsService {
 
 
 
-    public Donar addDonars(DonarDto donars) {
+    public Donar addDonars(DonarDto donars, MultipartFile file) throws IOException {
         Donar donar = donars.fromDto();
+
+        if (file != null && !file.isEmpty()) {
+            donar.setImage(file.getBytes());
+        }
+
         if(donars.getVillageId() != null && donars.getVillageId() > 0 ) {
             Optional<VillageLookup> villageById = lookupDAO.getVillageById(donars.getVillageId().intValue());
             villageById.ifPresent(donar::setVillage);

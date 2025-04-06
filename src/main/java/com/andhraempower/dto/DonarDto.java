@@ -30,6 +30,7 @@ public class DonarDto {
     private String modeOfPayment;
     private String description;
     private String imageUrl;
+    private byte[] image;
 
     public DonarDto(Long id, String firstName, String lastName, String phoneNumber, String email, String description,
                     String address,
@@ -63,6 +64,7 @@ public class DonarDto {
         donar.setEmail(this.email);
         donar.setAddress(this.address);
         donar.setDescription(this.description);
+        donar.setImage(this.image);
         return donar;
     }
 

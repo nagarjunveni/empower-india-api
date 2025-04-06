@@ -3,6 +3,7 @@ package com.andhraempower.dto;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -40,6 +41,7 @@ public class ProjectResponseDto {
     private LocalDate actualStartDate;
     private LocalDate actualEndDate;
     private String statusCode;
+    private List<CommitteeMembersDto> committeeMembersList = new ArrayList<>();
 
     public ProjectResponseDto(Long id, String projectCategory, Integer projectCategoryId, String projectType
             , Long projectTypeId, String status, String location, Double latitude, Double longitude, Double projectEstimation

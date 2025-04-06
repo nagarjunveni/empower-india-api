@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +41,31 @@ public class DonarsController {
     public ResponseEntity<Donar> addDonars(@RequestParam(value = "projectId",required = false) Long projectId, @RequestBody DonarDto donars) {
         log.debug("Adding Donar {} and project Id {}", donars, projectId);
         try {
-            final Donar donar = donarsService.addDonars(donars);
+            final Donar donar = donarsService.addDonars(donars, null);
+            Optional.ofNullable(projectId).ifPresent(id -> donarsService.associateDonarToProject(id, donar, donars.getAmount(), donars.getModeOfPayment(), donars.getMemoryOf()));
+            return ResponseEntity.ok(donar);
+        }catch (Exception e){
+            log.error("Exception while adding committee member", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping(value = "/addDonars-image",produces = {EmpowerConstants.APPLICATION_JSON, EmpowerConstants.TEXT_PLAIN})
+    @Operation(summary = "Adds new Donars .")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.BAD_REQUEST_CODE, description = EmpowerConstants.BAD_REQUEST_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.UNAUTHORIZED_CODE, description = EmpowerConstants.UNAUTHORIZED_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.FORBIDDEN_CODE, description = EmpowerConstants.FORBIDDEN_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
+    })
+    public ResponseEntity<Donar> addDonarsWithImage(@RequestParam(value = "projectId",required = false) Long projectId,
+                                                    @RequestPart("donar") DonarDto donars,
+                                                    @RequestPart(value = "donarImage", required = false) MultipartFile file) {
+        log.debug("Adding Donar {} and project Id {}", donars, projectId);
+        try {
+            final Donar donar = donarsService.addDonars(donars,file);
             Optional.ofNullable(projectId).ifPresent(id -> donarsService.associateDonarToProject(id, donar, donars.getAmount(), donars.getModeOfPayment(), donars.getMemoryOf()));
             return ResponseEntity.ok(donar);
         }catch (Exception e){
@@ -80,7 +105,7 @@ public class DonarsController {
             if(donarDto.getId() == null ){
                 return ResponseEntity.badRequest().build();
             }
-            Donar donarResponse = donarsService.addDonars(donarDto);
+            Donar donarResponse = donarsService.addDonars(donarDto, null);
             return ResponseEntity.ok().body(donarResponse);
         }catch (Exception e){
             log.error("Exception while adding donar", e);
