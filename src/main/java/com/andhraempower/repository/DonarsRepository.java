@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 public interface DonarsRepository extends JpaRepository<Donar, Integer> {
 
   @Query("SELECT new com.andhraempower.dto.DonarDto( " +
-          "d.id, d.firstName, d.lastName, d.phoneNumber, d.email, d.description, d.address, vl.id, vl.name, ml.id, ml.name, dl.id, dl.name, SUM(vpl.amount), " +
+          "d.id, d.image, d.firstName, d.lastName, d.phoneNumber, d.email, d.description, d.address, vl.id, vl.name, ml.id, ml.name, dl.id, dl.name, SUM(vpl.amount), " +
           "(SELECT sc.categoryName FROM SponsorCategory sc " +
           "WHERE SUM(vpl.amount) >= sc.minAmount " +
           "AND (sc.maxAmount IS NULL OR SUM(vpl.amount) <= sc.maxAmount) " +
@@ -26,12 +26,12 @@ public interface DonarsRepository extends JpaRepository<Donar, Integer> {
           "LEFT JOIN VillageLookup vl ON d.village.id = vl.id " +
           "LEFT JOIN MandalLookup ml ON vl.mandalId = ml.id " +
           "LEFT JOIN DistrictLookup dl ON ml.districtId = dl.id "+
-          "GROUP BY d.id, d.firstName, d.lastName, d.phoneNumber, d.email, d.address, vl.id, vl.name, ml.id, ml.name, dl.id, dl.name " +
+          "GROUP BY d.id, d.image, d.firstName, d.lastName, d.phoneNumber, d.email, d.address, vl.id, vl.name, ml.id, ml.name, dl.id, dl.name " +
           "ORDER BY SUM(vpl.amount) DESC")
   List<DonarDto> findDonars(Pageable pageable);
 
   @Query("SELECT new com.andhraempower.dto.DonarDto( " +
-          "d.id, d.firstName, d.lastName, d.phoneNumber, d.email, d.description, d.address, vl.id, vl.name, ml.id, ml.name, dl.id, dl.name, SUM(vpl.amount), " +
+          "d.id, d.image, d.firstName, d.lastName, d.phoneNumber, d.email, d.description, d.address, vl.id, vl.name, ml.id, ml.name, dl.id, dl.name, SUM(vpl.amount), " +
           "(SELECT sc.categoryName FROM SponsorCategory sc " +
           "WHERE SUM(vpl.amount) >= sc.minAmount " +
           "AND (sc.maxAmount IS NULL OR SUM(vpl.amount) <= sc.maxAmount) " +
@@ -45,7 +45,7 @@ public interface DonarsRepository extends JpaRepository<Donar, Integer> {
           "LEFT JOIN MandalLookup ml ON vl.mandalId = ml.id " +
           "LEFT JOIN DistrictLookup dl ON ml.districtId = dl.id "+
           "WHERE (d.id = :donarId)  "+
-          "GROUP BY d.id, d.firstName, d.lastName, d.phoneNumber, d.email, d.address, vl.id, vl.name, ml.id, ml.name, dl.id, dl.name ")
+          "GROUP BY d.id, d.image, d.firstName, d.lastName, d.phoneNumber, d.email, d.address, vl.id, vl.name, ml.id, ml.name, dl.id, dl.name ")
   DonarDto findDonarInfo(
           @Param("donarId") Long donarId
   );

@@ -99,9 +99,8 @@ public class UserController {
             @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = "User not found"),
             @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = "Unexpected server error")
     })
-    public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> request) {
-        String emailOrPhone = request.get("identifier");
-        userService.findByEmailOrPhone(emailOrPhone);
+    public ResponseEntity<String> forgotPassword(@RequestParam String identifier) {
+        userService.findByEmailOrPhone(identifier);
         return ResponseEntity.ok("Your password has been reset and sent to your email.");
     }
 
@@ -116,8 +115,8 @@ public class UserController {
             @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = "User not found"),
             @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = "Unexpected server error")
     })
-    public ResponseEntity<UserResponseDto> resetPassword(@RequestBody Map<String, String> request) {
-        String emailOrPhone = request.get("identifier");
-        return ResponseEntity.ok(userService.resetPassword(emailOrPhone));
+    public ResponseEntity<UserResponseDto> resetPassword(@RequestParam String identifier) {
+        return ResponseEntity.ok(userService.resetPassword(identifier));
     }
+
 }

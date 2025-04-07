@@ -29,16 +29,16 @@ public class DonarDto {
     private String memoryOf;
     private String modeOfPayment;
     private String description;
-    private String imageUrl;
     private byte[] image;
 
-    public DonarDto(Long id, String firstName, String lastName, String phoneNumber, String email, String description,
+    public DonarDto(Long id, byte[] image, String firstName, String lastName, String phoneNumber, String email, String description,
                     String address,
                     Long villageId, String villageName,
                     Long mandalId, String mandalName,
                     Long districtId, String districtName,
                     Double amount, String category) {
         this.id = id;
+        this.image = image;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
@@ -53,6 +53,7 @@ public class DonarDto {
         this.districtName = districtName;
         this.amount = amount;
         this.category = category;
+
     }
 
     public Donar fromDto(){
