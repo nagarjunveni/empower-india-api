@@ -30,4 +30,9 @@ public class ProjectStatusTracking {
     @Column(name = "created_date", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", updatable = false)
     private LocalDateTime createdDate;
 
+    @Lob
+    @Column(name = "status_image", columnDefinition = "LONGBLOB")
+    private byte[] image;
+
+
 }
