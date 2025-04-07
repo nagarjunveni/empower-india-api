@@ -41,5 +41,9 @@ public class Donar extends Audit {
     @JoinColumn(name = "village_id")
     private VillageLookup village;
 
+    @Lob
+    @Column(name = "image", columnDefinition = "LONGBLOB")
+    private byte[] image;
+
 
 }

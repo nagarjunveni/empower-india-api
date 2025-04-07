@@ -16,11 +16,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.andhraempower.constants.EmpowerConstants.USER_ADMIN;
 import static com.andhraempower.constants.ProjectWorkFlowStatus.ESTIMATION_ADDED;
@@ -37,8 +40,11 @@ public class ProjectService {
     @Autowired
     private VillageProjectDonarRepository villageProjectDonarRepository;
 
+    @Autowired
+    private CommitteeService committeeService;
 
-    public void saveProject(ProjectRequestDto projectRequestDto) {
+
+    public void saveProject(ProjectRequestDto projectRequestDto, MultipartFile multipartFile) throws IOException {
         log.info("Saving new project: {}", projectRequestDto);
         Optional<VillageLookup> village = getVillageLookup(projectRequestDto.getVillageId());
         Optional<CategoryLookup> category = getCategoryLookup(projectRequestDto.getProjectCategoryId());
@@ -49,15 +55,22 @@ public class ProjectService {
         } else {
             project.setStatusCode(StatusEnum.NEW.name());
         }
+        if(multipartFile != null && !multipartFile.isEmpty()) {
+            project.setProjectImage(multipartFile.getBytes());
+        }
         VillageProject villageProject = projectRepository.save(project);
         log.info("New Project saved successfully!");
         statusChangePublisher.publishStatusChange(new StatusChangeEvent(villageProject.getId(), NEW_PROJECT_CREATED, USER_ADMIN, LocalDateTime.now()));
     }
-    public void updateProject(ProjectRequestDto projectRequestDto) {
+    public void updateProject(ProjectRequestDto projectRequestDto,MultipartFile multipartFile) {
         projectRepository.findById(projectRequestDto.getId())
                 .ifPresentOrElse(project -> {
                     Double existingProjectEstimation = project.getProjectEstimation();
-                    projectRepository.save(getUpdatedProject(project, projectRequestDto));
+                    try {
+                        projectRepository.save(getUpdatedProject(project, projectRequestDto, multipartFile));
+                    } catch (IOException e) {
+                       e.printStackTrace();
+                    }
                     if(!existingProjectEstimation.equals(projectRequestDto.getProjectEstimation())) {
                         statusChangePublisher.publishStatusChange(new StatusChangeEvent(project.getId(), ESTIMATION_ADDED, USER_ADMIN, LocalDateTime.now()));
                     }
@@ -104,6 +117,35 @@ public class ProjectService {
             projectResponseDto.setRemainingRequiredAmount(projectResponseDto.getProjectEstimation());
             projectResponseDto.setSponsersList(new ArrayList<>());
         }
+
+        List<CommitteeMembers> committeeMembersList =  committeeService.getCommittee(projectResponseDto.getId());
+
+        if (committeeMembersList != null) {
+            projectResponseDto.setCommitteeMembersList(
+                    committeeMembersList.stream()
+                            .map(this::convertEntityToDto)
+                            .collect(Collectors.toList())
+            );
+        } else {
+            projectResponseDto.setCommitteeMembersList(new ArrayList<>());
+        }
+
+    }
+
+    public CommitteeMembersDto convertEntityToDto(CommitteeMembers committeeMember) {
+        CommitteeMembersDto dto = new CommitteeMembersDto();
+
+        dto.setId(committeeMember.getId());
+        dto.setFirstName(committeeMember.getFirstName());
+        dto.setLastName(committeeMember.getLastName());
+        dto.setFatherName(committeeMember.getFatherName());
+        dto.setPhoneNumber(committeeMember.getPhoneNumber());
+        dto.setEmail(committeeMember.getEmail());
+        dto.setAddress(committeeMember.getAddress());
+        dto.setRecordType(committeeMember.getRecordType());
+        dto.setVillageId(committeeMember.getVillageId());
+
+        return dto;
     }
 
     public Page<ProjectResponseDto> searchProjects(Long districtCode, Long mandalCode, Long villageCode,Long id, String statusCode, Pageable pageable) {
@@ -113,7 +155,7 @@ public class ProjectService {
         return searchedProjects;
     }
 
-    private VillageProject getUpdatedProject(VillageProject villageProject, ProjectRequestDto projectRequestDto){
+    private VillageProject getUpdatedProject(VillageProject villageProject, ProjectRequestDto projectRequestDto, MultipartFile multipartFile) throws IOException {
         villageProject.setLocation(projectRequestDto.getLocation());
         villageProject.setLatitude(projectRequestDto.getLatitude());
         villageProject.setLongitude(projectRequestDto.getLongitude());
@@ -126,6 +168,10 @@ public class ProjectService {
         villageProject.setEstimateEndDate(projectRequestDto.getEstimateEndDate());
         villageProject.setActualStartDate(projectRequestDto.getActualStartDate());
         villageProject.setActualEndDate(projectRequestDto.getActualEndDate());
+
+        if(multipartFile != null && !multipartFile.isEmpty()) {
+            villageProject.setProjectImage(multipartFile.getBytes());
+        }
 
         if(!villageProject.getVillage().getId().equals(projectRequestDto.getVillageId())) {
             Optional<VillageLookup> villageLookup = getVillageLookup(projectRequestDto.getVillageId());

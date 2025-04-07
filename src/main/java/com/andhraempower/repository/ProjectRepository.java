@@ -20,7 +20,7 @@ public interface ProjectRepository extends JpaRepository<VillageProject, Long> {
             " vp.statusCode, vp.location, " +
             "vp.latitude, vp.longitude, vp.projectEstimation, vp.governmentShare, vp.publicShare, " +
             "vp.isNew, vp.description, vp.createdBy, vp.lastUpdatedBy, " +
-            "vl.name,vl.id, ml.name,ml.id, dl.name,dl.id, vl.pinCode, vp.committeeAdded, vp.bankAccountAdded, vp.estimationCompleted,vp.estimateStartDate, vp.estimateEndDate,vp.actualStartDate,vp.actualEndDate, vp.statusCode ) " +
+            "vl.name,vl.id, ml.name,ml.id, dl.name,dl.id, vl.pinCode, vp.committeeAdded, vp.bankAccountAdded, vp.estimationCompleted,vp.estimateStartDate, vp.estimateEndDate,vp.actualStartDate,vp.actualEndDate, vp.statusCode, vp.projectImage ) " +
             "FROM VillageProject vp " +
             "JOIN VillageLookup vl ON vp.village.id = vl.id " +
             "JOIN MandalLookup ml ON vl.mandalId = ml.id " +
@@ -31,7 +31,7 @@ public interface ProjectRepository extends JpaRepository<VillageProject, Long> {
             "vp.id, vp.projectCategory.name,vp.projectCategory.id, vp.projectTypeLookup.description,vp.projectTypeLookup.id, vp.status, vp.location, " +
             "vp.latitude, vp.longitude, vp.projectEstimation, vp.governmentShare, vp.publicShare, " +
             "vp.isNew, vp.description, vp.createdBy, vp.lastUpdatedBy, " +
-            "vl.name,vl.id, ml.name,ml.id, dl.name,dl.id, vl.pinCode, vp.committeeAdded, vp.bankAccountAdded, vp.estimationCompleted,vp.estimateStartDate, vp.estimateEndDate,vp.actualStartDate,vp.actualEndDate, vp.statusCode ) " +
+            "vl.name,vl.id, ml.name,ml.id, dl.name,dl.id, vl.pinCode, vp.committeeAdded, vp.bankAccountAdded, vp.estimationCompleted,vp.estimateStartDate, vp.estimateEndDate,vp.actualStartDate,vp.actualEndDate, vp.statusCode, vp.projectImage ) " +
             "FROM VillageProject vp " +
             "JOIN VillageLookup vl ON vp.village.id = vl.id " +
             "JOIN MandalLookup ml ON vl.mandalId = ml.id " +
@@ -51,7 +51,7 @@ public interface ProjectRepository extends JpaRepository<VillageProject, Long> {
             " vp.status, vp.location, " +
             "vp.latitude, vp.longitude, vp.projectEstimation, vp.governmentShare, vp.publicShare, " +
             "vp.isNew, vp.description, vp.createdBy, vp.lastUpdatedBy, " +
-            "vl.name,vl.id, ml.name,ml.id, dl.name,dl.id, vl.pinCode, vp.committeeAdded, vp.bankAccountAdded, vp.estimationCompleted,vp.estimateStartDate, vp.estimateEndDate,vp.actualStartDate,vp.actualEndDate,vp.statusCode ) " +
+            "vl.name,vl.id, ml.name,ml.id, dl.name,dl.id, vl.pinCode, vp.committeeAdded, vp.bankAccountAdded, vp.estimationCompleted,vp.estimateStartDate, vp.estimateEndDate,vp.actualStartDate,vp.actualEndDate,vp.statusCode,vp.projectImage ) " +
             "FROM VillageProject vp " +
             "JOIN VillageLookup vl ON vp.village.id = vl.id " +
             "JOIN MandalLookup ml ON vl.mandalId = ml.id " +
@@ -64,7 +64,7 @@ public interface ProjectRepository extends JpaRepository<VillageProject, Long> {
             " vp.status, vp.location, " +
             "vp.latitude, vp.longitude, vp.projectEstimation, vp.governmentShare, vp.publicShare, " +
             "vp.isNew, vp.description, vp.createdBy, vp.lastUpdatedBy, " +
-            "vl.name,vl.id, ml.name,ml.id, dl.name,dl.id, vl.pinCode, vp.committeeAdded, vp.bankAccountAdded, vp.estimationCompleted,vp.estimateStartDate, vp.estimateEndDate,vp.actualStartDate,vp.actualEndDate, vp.statusCode ) " +
+            "vl.name,vl.id, ml.name,ml.id, dl.name,dl.id, vl.pinCode, vp.committeeAdded, vp.bankAccountAdded, vp.estimationCompleted,vp.estimateStartDate, vp.estimateEndDate,vp.actualStartDate,vp.actualEndDate, vp.statusCode,vp.projectImage ) " +
             "FROM VillageProject vp " +
             "JOIN VillageLookup vl ON vp.village.id = vl.id " +
             "JOIN MandalLookup ml ON vl.mandalId = ml.id " +
@@ -79,7 +79,7 @@ public interface ProjectRepository extends JpaRepository<VillageProject, Long> {
             " vp.status, vp.location, " +
             "vp.latitude, vp.longitude, vp.projectEstimation, vp.governmentShare, vp.publicShare, " +
             "vp.isNew, vp.description, vp.createdBy, vp.lastUpdatedBy, " +
-            "vl.name,vl.id, ml.name,ml.id, dl.name,dl.id, vl.pinCode, vp.committeeAdded, vp.bankAccountAdded, vp.estimationCompleted,vp.estimateStartDate, vp.estimateEndDate,vp.actualStartDate,vp.actualEndDate,vp.statusCode ) " +
+            "vl.name,vl.id, ml.name,ml.id, dl.name,dl.id, vl.pinCode, vp.committeeAdded, vp.bankAccountAdded, vp.estimationCompleted,vp.estimateStartDate, vp.estimateEndDate,vp.actualStartDate,vp.actualEndDate,vp.statusCode,vp.projectImage ) " +
             "FROM VillageProject vp " +
             "JOIN VillageLookup vl ON vp.village.id = vl.id " +
             "JOIN MandalLookup ml ON vl.mandalId = ml.id " +

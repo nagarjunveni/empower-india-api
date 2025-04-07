@@ -2,6 +2,7 @@ package com.andhraempower.controller;
 
 import com.andhraempower.constants.EmpowerConstants;
 import com.andhraempower.dto.ProjectResponseDto;
+import com.andhraempower.dto.VillageDemographicsDTO;
 import com.andhraempower.entity.VillageDemographics;
 import com.andhraempower.service.VillageDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -102,5 +103,19 @@ public class VillageDetailsController {
             log.error("Error while fetching projects", e);
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    @GetMapping("/village-project/{villageId}")
+    @Operation(summary = "Fetches Village Details by ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.BAD_REQUEST_CODE, description = EmpowerConstants.BAD_REQUEST_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.UNAUTHORIZED_CODE, description = EmpowerConstants.UNAUTHORIZED_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.FORBIDDEN_CODE, description = EmpowerConstants.FORBIDDEN_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
+    })
+    public ResponseEntity<VillageDemographicsDTO> villageProjectDetails(@PathVariable Integer villageId) {
+        return ResponseEntity.ok(villageDetailsService.villageProjectDetails(villageId) != null ? villageDetailsService.villageProjectDetails(villageId) : new VillageDemographicsDTO());
     }
 }
