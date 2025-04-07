@@ -41,6 +41,7 @@ public class ProjectResponseDto {
     private LocalDate actualStartDate;
     private LocalDate actualEndDate;
     private String statusCode;
+    private byte[] projectImage;
     private List<CommitteeMembersDto> committeeMembersList = new ArrayList<>();
 
     public ProjectResponseDto(Long id, String projectCategory, Integer projectCategoryId, String projectType
@@ -48,7 +49,7 @@ public class ProjectResponseDto {
             , Double governmentShare, Double publicShare, Boolean isNew, String description, String createdBy
             , String lastUpdatedBy, String villageName, Long villageId, String mandalName, Long mandalId, String districtName
             , Long districtId, String pinCode, boolean isCommitteeAdded, boolean isBankDetailsAdded, boolean isEstimationAdded,LocalDate estimateStartDate,
-             LocalDate estimateEndDate, LocalDate actualStartDate, LocalDate actualEndDate,String statusCode
+             LocalDate estimateEndDate, LocalDate actualStartDate, LocalDate actualEndDate,String statusCode, byte[] projectImage
     ) {
         this.id = id;
         this.projectCategory = projectCategory;
@@ -81,6 +82,7 @@ public class ProjectResponseDto {
         this.actualStartDate = actualStartDate;
         this.actualEndDate = actualEndDate;
         this.statusCode = statusCode;
+        this.projectImage = projectImage;
     }
 
     public ProjectResponseDto(Long id, String projectCategory, Integer projectCategoryId, String projectType
@@ -88,7 +90,7 @@ public class ProjectResponseDto {
             , Double projectEstimation, Double governmentShare, Double publicShare, Boolean isNew
             , String description, String createdBy, String lastUpdatedBy, String villageName
             , Long villageId, String mandalName, Long mandalId, String districtName, Long districtId, String pinCode, Double remainingRequiredAmount
-            ,LocalDate estimateStartDate, LocalDate estimateEndDate, LocalDate actualStartDate, LocalDate actualEndDate,String statusCode) {
+            ,LocalDate estimateStartDate, LocalDate estimateEndDate, LocalDate actualStartDate, LocalDate actualEndDate,String statusCode, byte[] projectImage) {
         this.id = id;
         this.projectCategory = projectCategory;
         this.projectCategoryId = projectCategoryId;
@@ -118,6 +120,7 @@ public class ProjectResponseDto {
         this.actualStartDate = actualStartDate;
         this.actualEndDate = actualEndDate;
         this.statusCode = statusCode;
+        this.projectImage =  projectImage;
     }
 
 }

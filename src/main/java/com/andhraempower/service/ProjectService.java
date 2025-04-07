@@ -16,7 +16,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +44,7 @@ public class ProjectService {
     private CommitteeService committeeService;
 
 
-    public void saveProject(ProjectRequestDto projectRequestDto) {
+    public void saveProject(ProjectRequestDto projectRequestDto, MultipartFile multipartFile) throws IOException {
         log.info("Saving new project: {}", projectRequestDto);
         Optional<VillageLookup> village = getVillageLookup(projectRequestDto.getVillageId());
         Optional<CategoryLookup> category = getCategoryLookup(projectRequestDto.getProjectCategoryId());
@@ -53,15 +55,22 @@ public class ProjectService {
         } else {
             project.setStatusCode(StatusEnum.NEW.name());
         }
+        if(multipartFile != null && !multipartFile.isEmpty()) {
+            project.setProjectImage(multipartFile.getBytes());
+        }
         VillageProject villageProject = projectRepository.save(project);
         log.info("New Project saved successfully!");
         statusChangePublisher.publishStatusChange(new StatusChangeEvent(villageProject.getId(), NEW_PROJECT_CREATED, USER_ADMIN, LocalDateTime.now()));
     }
-    public void updateProject(ProjectRequestDto projectRequestDto) {
+    public void updateProject(ProjectRequestDto projectRequestDto,MultipartFile multipartFile) {
         projectRepository.findById(projectRequestDto.getId())
                 .ifPresentOrElse(project -> {
                     Double existingProjectEstimation = project.getProjectEstimation();
-                    projectRepository.save(getUpdatedProject(project, projectRequestDto));
+                    try {
+                        projectRepository.save(getUpdatedProject(project, projectRequestDto, multipartFile));
+                    } catch (IOException e) {
+                       e.printStackTrace();
+                    }
                     if(!existingProjectEstimation.equals(projectRequestDto.getProjectEstimation())) {
                         statusChangePublisher.publishStatusChange(new StatusChangeEvent(project.getId(), ESTIMATION_ADDED, USER_ADMIN, LocalDateTime.now()));
                     }
@@ -146,7 +155,7 @@ public class ProjectService {
         return searchedProjects;
     }
 
-    private VillageProject getUpdatedProject(VillageProject villageProject, ProjectRequestDto projectRequestDto){
+    private VillageProject getUpdatedProject(VillageProject villageProject, ProjectRequestDto projectRequestDto, MultipartFile multipartFile) throws IOException {
         villageProject.setLocation(projectRequestDto.getLocation());
         villageProject.setLatitude(projectRequestDto.getLatitude());
         villageProject.setLongitude(projectRequestDto.getLongitude());
@@ -159,6 +168,10 @@ public class ProjectService {
         villageProject.setEstimateEndDate(projectRequestDto.getEstimateEndDate());
         villageProject.setActualStartDate(projectRequestDto.getActualStartDate());
         villageProject.setActualEndDate(projectRequestDto.getActualEndDate());
+
+        if(multipartFile != null && !multipartFile.isEmpty()) {
+            villageProject.setProjectImage(multipartFile.getBytes());
+        }
 
         if(!villageProject.getVillage().getId().equals(projectRequestDto.getVillageId())) {
             Optional<VillageLookup> villageLookup = getVillageLookup(projectRequestDto.getVillageId());

@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Objects;
 
@@ -100,7 +101,31 @@ public class ProjectController {
     public ResponseEntity<String> saveProject(@RequestBody ProjectRequestDto projectRequestDto) {
         try {
             log.debug("Request for saving project : {}", projectRequestDto);
-            projectService.saveProject(projectRequestDto);
+            projectService.saveProject(projectRequestDto, null);
+            return ResponseEntity.ok("New project saved successfully!");
+        }catch (IllegalArgumentException e){
+            log.error("IllegalArgumentException while saving the project", e);
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e){
+            log.error("Exception while saving the project", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("project-image")
+    @Operation(summary = "Save a new project and project image to the database.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = "Project saved successfully"),
+            @ApiResponse(responseCode = EmpowerConstants.BAD_REQUEST_CODE, description = "Invalid request data"),
+            @ApiResponse(responseCode = EmpowerConstants.UNAUTHORIZED_CODE, description = EmpowerConstants.UNAUTHORIZED_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.FORBIDDEN_CODE, description = EmpowerConstants.FORBIDDEN_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = "Server error while saving project")
+    })
+    public ResponseEntity<String> saveProjectWithImage(@RequestPart("project") ProjectRequestDto projectRequestDto, @RequestPart(value = "projectImage", required = false) MultipartFile multipartFile) {
+        try {
+            log.debug("Request for saving project : {}", projectRequestDto);
+            projectService.saveProject(projectRequestDto, multipartFile);
             return ResponseEntity.ok("New project saved successfully!");
         }catch (IllegalArgumentException e){
             log.error("IllegalArgumentException while saving the project", e);
@@ -124,7 +149,7 @@ public class ProjectController {
     public ResponseEntity<String> updateProject(@RequestBody ProjectRequestDto projectRequestDto) {
         try {
             log.debug("Request for updating project : {}", projectRequestDto);
-            projectService.updateProject(projectRequestDto);
+            projectService.updateProject(projectRequestDto, null);
             return ResponseEntity.ok("Project updates successfully!");
         }catch (IllegalArgumentException e){
             log.error("IllegalArgumentException while updating the project", e);

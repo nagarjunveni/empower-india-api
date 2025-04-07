@@ -89,6 +89,10 @@ public class VillageProject {
     @Column(name = "actual_end_date")
     private LocalDate actualEndDate;
 
+    @Lob
+    @Column(name = "image", columnDefinition = "LONGBLOB")
+    private byte[] projectImage;
+
     @OneToMany
     @JoinColumn(name = "village_project_id")
     @Lazy
