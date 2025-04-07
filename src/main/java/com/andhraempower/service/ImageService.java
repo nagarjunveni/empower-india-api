@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,9 +23,16 @@ public class ImageService {
         Image image = new Image();
         image.setName(file.getOriginalFilename());
         image.setType(file.getContentType());
-        image.setData(file.getBytes());
-        image.setCreatedAt(new Timestamp(System.currentTimeMillis()) );
+        image.setData(encodeToBase64(file)); // Convert file to Base64
+        image.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+
         return imageRepository.save(image);
+    }
+
+    // Convert image file to Base64
+    private String encodeToBase64(MultipartFile file) throws IOException {
+        byte[] bytes = file.getBytes();
+        return Base64.getEncoder().encodeToString(bytes); // Encode to Base64
     }
 
     // Upload multiple images

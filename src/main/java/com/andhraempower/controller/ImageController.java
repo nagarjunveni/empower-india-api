@@ -75,7 +75,7 @@ public class ImageController {
             @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
             @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
     })
-    public ResponseEntity<byte[]> getImage(@PathVariable Long id) {
+    public ResponseEntity<String> getImage(@PathVariable Long id) {
         Optional<Image> imageOpt = imageService.getImage(id);
         if (imageOpt.isPresent()) {
             Image image = imageOpt.get();

@@ -18,7 +18,7 @@ public class Image {
     private String type;
 
     @Lob
-    private byte[] data;
+    private String data; // Base64 encoded image data
 
     private Timestamp createdAt;
 
