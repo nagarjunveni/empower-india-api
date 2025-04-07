@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/v1/project/status")
 public class ProjectStatusController {
@@ -58,7 +59,7 @@ public class ProjectStatusController {
         return ResponseEntity.ok(new ProjectTrackingResponseDto(projectStatusTracking));
     }
 
-    @Operation(summary = "Create a new project status tracking")
+    @Operation(summary = "Updates the given project status tracking")
     @PutMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiResponses(value = {
             @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
@@ -78,7 +79,7 @@ public class ProjectStatusController {
         return ResponseEntity.ok(new ProjectTrackingResponseDto(projectStatusTracking));
     }
 
-    @Operation(summary = "Create a new project status tracking")
+    @Operation(summary = "Deletes a project status tracking")
     @DeleteMapping("/{projectStatusId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
