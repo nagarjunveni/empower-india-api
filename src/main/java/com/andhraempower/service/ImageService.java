@@ -1,14 +1,12 @@
 package com.andhraempower.service;
 
-import com.andhraempower.entity.Image;
+import com.andhraempower.entity.GalleryImage;
 import com.andhraempower.repository.ImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,45 +17,38 @@ public class ImageService {
     private ImageRepository imageRepository;
 
     // Upload a single image
-    public Image uploadImage(MultipartFile file) throws IOException {
-        Image image = new Image();
-        image.setName(file.getOriginalFilename());
-        image.setType(file.getContentType());
-        image.setData(encodeToBase64(file)); // Convert file to Base64
-        image.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+    public GalleryImage uploadImage(MultipartFile file, String eventType, String description) throws IOException {
+        GalleryImage image = new GalleryImage();
+        image.setEventType(eventType);
+        image.setDescription(description);
+        image.setImage(file.getBytes()); // Convert file to byte array
 
         return imageRepository.save(image);
     }
 
-    // Convert image file to Base64
-    private String encodeToBase64(MultipartFile file) throws IOException {
-        byte[] bytes = file.getBytes();
-        return Base64.getEncoder().encodeToString(bytes); // Encode to Base64
-    }
-
     // Upload multiple images
-    public List<Image> uploadImages(List<MultipartFile> files) throws IOException {
+    public List<GalleryImage> uploadImages(List<MultipartFile> files, String eventType, String description) throws IOException {
         for (MultipartFile file : files) {
-            uploadImage(file);
+            uploadImage(file, eventType, description);
         }
-        return imageRepository.findByDeletedFalse(); // Retrieve all non-deleted images
+        return imageRepository.findByDeletedFalse(); // Retrieve non-deleted images
     }
 
     // Get image by ID (ignores deleted images)
-    public Optional<Image> getImage(Long id) {
+    public Optional<GalleryImage> getImage(Long id) {
         return imageRepository.findById(id).filter(image -> !image.getDeleted());
     }
 
     // Get all images (only non-deleted)
-    public List<Image> getAllImages() {
+    public List<GalleryImage> getAllImages() {
         return imageRepository.findByDeletedFalse();
     }
 
     // Soft delete image by ID
-    public Optional<Image> softDeleteImage(Long id) {
-        Optional<Image> imageOpt = imageRepository.findById(id);
+    public Optional<GalleryImage> softDeleteImage(Long id) {
+        Optional<GalleryImage> imageOpt = imageRepository.findById(id);
         if (imageOpt.isPresent()) {
-            Image image = imageOpt.get();
+            GalleryImage image = imageOpt.get();
             image.setDeleted(true); // Mark as deleted
             imageRepository.save(image);
             return Optional.of(image);
