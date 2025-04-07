@@ -353,3 +353,12 @@ CREATE TABLE village_project_expenses (
     FOREIGN KEY (committee_id) REFERENCES committee_lookup(id)
         ON DELETE CASCADE
 );
+
+CREATE TABLE images (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    type VARCHAR(255) NOT NULL,
+    data LONGBLOB NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted BOOLEAN DEFAULT FALSE
+);
