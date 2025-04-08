@@ -102,7 +102,7 @@ public interface ProjectRepository extends JpaRepository<VillageProject, Long> {
             "FROM DistrictLookup dl "+
             "LEFT join MandalLookup ml on dl.id = ml.districtId "+
             "LEFT join VillageLookup vl on ml.id =vl.mandalId " +
-            "LEFT join VillageProject vp on vl.id = vp.village.id " +
+            "join VillageProject vp on vl.id = vp.village.id " +
             "LEFT join VillageDemographics vd on vl.id = vd.id " +
             "WHERE (:districtId IS NULL OR dl.id = :districtId) " +
             "AND (:mandalId IS NULL OR ml.id = :mandalId) " +
