@@ -53,7 +53,7 @@ public class ProjectService {
                 projectRequestDto.getProjectEstimation() > 0) {
             project.setStatusCode(StatusEnum.WFD.name());
         } else {
-            project.setStatusCode(StatusEnum.NEW.name());
+            project.setStatusCode(StatusEnum.DRAFT.name());
         }
         if(multipartFile != null && !multipartFile.isEmpty()) {
             project.setProjectImage(multipartFile.getBytes());
@@ -168,6 +168,7 @@ public class ProjectService {
         villageProject.setEstimateEndDate(projectRequestDto.getEstimateEndDate());
         villageProject.setActualStartDate(projectRequestDto.getActualStartDate());
         villageProject.setActualEndDate(projectRequestDto.getActualEndDate());
+        villageProject.setStatusCode(projectRequestDto.getStatusCode());
 
         if(multipartFile != null && !multipartFile.isEmpty()) {
             villageProject.setProjectImage(multipartFile.getBytes());
@@ -221,6 +222,7 @@ public class ProjectService {
                 .estimateEndDate(projectRequestDto.getEstimateEndDate())
                 .actualStartDate(projectRequestDto.getActualStartDate())
                 .actualEndDate(projectRequestDto.getActualEndDate())
+                .statusCode(projectRequestDto.getStatusCode())
                 .build();
     }
 

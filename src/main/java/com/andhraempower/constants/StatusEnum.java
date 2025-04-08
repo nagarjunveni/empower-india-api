@@ -1,7 +1,15 @@
 package com.andhraempower.constants;
 
 public enum StatusEnum {
-    NEW("New"),APPROVED("Approved"),REJECTED("Rejected"),WIP("Work in progress"),WFD("Waiting for Donars"),COMPLETED("Completed"), OPEN("New"); // Open is temporary to support existing data
+    NEW("New"),
+    APPROVED("Approved"),
+    REJECTED("Rejected"),
+    WIP("Work in Progress"),
+    WFD("Waiting For Sponsor"),
+    COMPLETED("Completed"),
+    OPEN("New"), // Open is temporary to support existing data
+    DRAFT("Draft"),
+    HOLD("Hold");
 
     private final String statusDescription;
 
