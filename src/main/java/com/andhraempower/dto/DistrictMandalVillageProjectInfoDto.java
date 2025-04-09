@@ -15,7 +15,9 @@ public class DistrictMandalVillageProjectInfoDto {
     private Long inprogress;
     private Long completed;
     private Long waitingSponsers;
-    private Long approvals;
+    private Long hold;
+    private Long draft;
+    private Long waitingApprovals;
     private Long villageDemographicsId;
     private Integer totalPopulation;
     private Integer scMalePopulation;
@@ -30,7 +32,7 @@ public class DistrictMandalVillageProjectInfoDto {
     private Integer otherFemalePopulation;
 
     public DistrictMandalVillageProjectInfoDto(Long districtId, String districtName, Long mandalId, String mandalName, Long villageId, String villageName,
-                                               Long villageProjectId, Long inprogress, Long completed, Long waitingSponsers, Long approvals
+                                               Long villageProjectId, Long inprogress, Long completed, Long waitingSponsers, Long hold
                             , Long villageDemographicsId, Integer totalPopulation, Integer scMalePopulation, Integer scFemalePopulation
                             , Integer stMalePopulation, Integer stFemalePopulation, Integer bcMalePopulation, Integer bcFemalePopulation, Integer ocMalePopulation,
                                                Integer ocFemalePopulation, Integer otherMalePopulation, Integer otherFemalePopulation
@@ -45,7 +47,40 @@ public class DistrictMandalVillageProjectInfoDto {
         this.inprogress = inprogress;
         this.completed = completed;
         this.waitingSponsers = waitingSponsers;
-        this.approvals = approvals;
+        this.hold = hold;
+        this.villageDemographicsId = villageDemographicsId;
+        this.totalPopulation = totalPopulation;
+        this.scMalePopulation = scMalePopulation;
+        this.scFemalePopulation = scFemalePopulation;
+        this.stMalePopulation = stMalePopulation;
+        this.stFemalePopulation = stFemalePopulation;
+        this.bcMalePopulation = bcMalePopulation;
+        this.bcFemalePopulation = bcFemalePopulation;
+        this.ocMalePopulation = ocMalePopulation;
+        this.ocFemalePopulation = ocFemalePopulation;
+        this.otherMalePopulation = otherMalePopulation;
+        this.otherFemalePopulation = otherFemalePopulation;
+    }
+
+    public DistrictMandalVillageProjectInfoDto(Long districtId, String districtName, Long mandalId, String mandalName, Long villageId, String villageName,
+                                               Long villageProjectId, Long inprogress, Long completed, Long waitingSponsers, Long hold, Long draft, Long waitingApprovals
+            , Long villageDemographicsId, Integer totalPopulation, Integer scMalePopulation, Integer scFemalePopulation
+            , Integer stMalePopulation, Integer stFemalePopulation, Integer bcMalePopulation, Integer bcFemalePopulation, Integer ocMalePopulation,
+                                               Integer ocFemalePopulation, Integer otherMalePopulation, Integer otherFemalePopulation
+    ) {
+        this.districtName = districtName;
+        this.districtId = districtId;
+        this.mandalId = mandalId;
+        this.mandalName = mandalName;
+        this.villageId = villageId;
+        this.villageName = villageName;
+        this.villageProjectId = villageProjectId;
+        this.inprogress = inprogress;
+        this.completed = completed;
+        this.waitingSponsers = waitingSponsers;
+        this.hold = hold;
+        this.draft = draft;
+        this.waitingApprovals = waitingApprovals;
         this.villageDemographicsId = villageDemographicsId;
         this.totalPopulation = totalPopulation;
         this.scMalePopulation = scMalePopulation;

@@ -278,16 +278,17 @@ public class ProjectController {
             @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
     })
     public ResponseEntity<Page<DistrictMandalVillageProjectInfoDto>> getDistrictMandalVillageProjects(@RequestParam(name = "districtId", required = false) Long districtId
-            , @RequestParam(name = "mandalId", required = false) Long mandalId
-            , @RequestParam(name = "typeId", required = false) Long typeId,
-                                                                                                      @RequestParam(name="status", required = false) String status,
+                                                                                                    , @RequestParam(name = "mandalId", required = false) Long mandalId
+                                                                                                    , @RequestParam(name = "typeId", required = false) Long typeId,
+                                                                                                      @RequestParam(name = "userId", required = false) Long userId,
+                                                                                                      @RequestParam(name = "status", required = false) String status,
                                                                                                       @RequestParam(name = "page", defaultValue = "0") int page,
                                                                                                       @RequestParam(name = "size", defaultValue = "10") int size) {
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.unsorted());
             Page<DistrictMandalVillageProjectInfoDto> projects;
 
-                projects = projectService.getDistrictMandalVillageProjects(districtId,mandalId,typeId,status,pageable);
+            projects = projectService.getDistrictMandalVillageProjects(districtId,mandalId,typeId,userId,status,pageable);
 
             log.debug("Projects Page: {}", projects);
             return ResponseEntity.ok(projects);
