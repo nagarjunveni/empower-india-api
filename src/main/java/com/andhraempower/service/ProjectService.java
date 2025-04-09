@@ -44,6 +44,9 @@ public class ProjectService {
     @Autowired
     private CommitteeService committeeService;
 
+    @Autowired
+    private FinanceService financeService;
+
 
     public void saveProject(ProjectRequestDto projectRequestDto, MultipartFile multipartFile) throws IOException {
         log.info("Saving new project: {}", projectRequestDto);
@@ -130,6 +133,9 @@ public class ProjectService {
         } else {
             projectResponseDto.setCommitteeMembersList(new ArrayList<>());
         }
+
+        VillageProjectExpenseResponse villageProjectExpenseResponse = financeService.getTransactionsForProject(projectResponseDto.getId());
+        projectResponseDto.setVillageProjectExpenseResponse(villageProjectExpenseResponse);
 
     }
 
