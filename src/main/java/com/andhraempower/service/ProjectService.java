@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -71,7 +72,7 @@ public class ProjectService {
                     } catch (IOException e) {
                        e.printStackTrace();
                     }
-                    if(!existingProjectEstimation.equals(projectRequestDto.getProjectEstimation())) {
+                    if (!Objects.equals(existingProjectEstimation, projectRequestDto.getProjectEstimation())) {
                         statusChangePublisher.publishStatusChange(new StatusChangeEvent(project.getId(), ESTIMATION_ADDED, USER_ADMIN, LocalDateTime.now()));
                     }
                     log.info("New Project Updated successfully!");
