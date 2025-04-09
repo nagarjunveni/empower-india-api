@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -142,8 +143,12 @@ public class DonarsController {
             @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
             @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
     })
-    public ResponseEntity<List<DonarDto>> getDonars(@RequestParam(name = "topN", required = false) Integer topN) {
-        return ResponseEntity.ok().body(donarsService.getDonars(topN));
+    public ResponseEntity<Page<DonarDto>> getDonars(@RequestParam(name = "districtId", required = false) Long districtId,
+                                                    @RequestParam(name = "mandalId", required = false) Long mandalId,
+                                                    @RequestParam(name = "villageId", required = false) Long villageId,
+                                                    @RequestParam(name = "page", defaultValue = "0") int page,
+                                                    @RequestParam(name = "size", defaultValue = "10") int size) {
+        return ResponseEntity.ok().body(donarsService.getDonars(districtId, mandalId,villageId, page, size));
     }
 
 

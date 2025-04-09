@@ -13,7 +13,10 @@ import com.andhraempower.repository.VillageProjectDonarRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,7 +52,13 @@ public class DonarsService {
 
     private final StatusChangePublisher statusChangePublisher;
 
-
+    private static final String[] units = {
+            "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"
+    };
+    private static final String[] tens = {
+            "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
+    };
+    private static final String[] powers = { "", "Thousand", "Lakh", "Crore" };
 
     public Donar addDonars(DonarDto donars, MultipartFile file) throws IOException {
         Donar donar = donars.fromDto();
@@ -97,9 +106,15 @@ public class DonarsService {
         villageProjectDonarRepository.deleteByIdAndVillageProjectId(committeeId, projectId);
     }
 
-    public List<DonarDto> getDonars(Integer topN) {
-        Pageable pageable = (topN != null && topN > 0) ? PageRequest.of(0, topN) : Pageable.unpaged();
-        return donarsRepository.findDonars(pageable);
+    public Page<DonarDto> getDonars(Long districtId, Long mandalId, Long villageId, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.unsorted());
+
+        Page<DonarDto> donarList = donarsRepository.findDonars(districtId,mandalId,villageId,pageable);
+        for(DonarDto donarDto : donarList){
+            String amountInText = donorAmountUpdate(donarDto.getAmount());
+            donarDto.setAmountText(amountInText);
+        }
+        return donarList;
     }
 
     public DonarAndProjectInfoDto getDonarInfo(Long donarId) {
@@ -108,6 +123,8 @@ public class DonarsService {
         donarAndProjectInfo.setProjectsInfo(donarsRepository.findProjectInfo(donarId));
         return donarAndProjectInfo;
     }
+
+
 
     public List<DonarDto> searchDonors(String searchTerm) {
         return convertToDTOList(donarsRepository.searchDonors(searchTerm));
@@ -131,5 +148,75 @@ public class DonarsService {
                 .email(donar.getEmail())
                 .address(donar.getAddress())
                 .build();
+    }
+
+    private String donorAmountUpdate(double amount) {
+
+        if (amount == 0) {
+            return "Zero Rupees";
+        }
+
+        // Split into integer and fractional parts
+        int integerPart = (int) amount;
+        int fractionalPart = (int) ((amount - integerPart) * 100);
+
+        // Convert integer part and fractional part to text
+        String integerText = convertIntegerToText(integerPart,0) + " rupees" ;
+
+
+        // Return final result
+        return integerText;
+    }
+
+    private static String convertIntegerToText(int number, int placeIndex) {
+        if (number == 0) {
+            return "";
+        }
+
+        StringBuilder result = new StringBuilder();
+
+        // Process groups of 3 digits
+        while (number > 0) {
+            if (number % 1000 >= 0 && placeIndex == 0) { // Thousand
+                result.insert(0, convertLessThanThousand(number % 1000) + " " + powers[placeIndex] + " ");
+                number /= 1000;
+            }else if(number % 100 >= 0 && placeIndex > 0) { // lakh & crore
+                //System.out.println( result.insert(0, convertLessThanThousand(number % 1000) + " " + powers[placeIndex] + " "));
+
+                String text = convertLessThanThousand(number % 100);
+                result.insert(0, text.trim() != "" ? (text + powers[placeIndex] + " " ): "");
+                number /= 100;
+            }
+
+            placeIndex++;
+        }
+
+        return result.toString().trim();
+    }
+
+    // Converts numbers less than 1000 to words (handles hundreds, tens, and units)
+    private static String convertLessThanThousand(int number) {
+        StringBuilder result = new StringBuilder();
+
+        if (number >= 100) {
+            result.append(units[number / 100]).append(" Hundred ");
+            number %= 100;
+        }
+
+        // Handling numbers from 10-19 (teen numbers)
+        if (number >= 10 && number <= 19) {
+            result.append(units[number]).append(" ");
+        } else if (number >= 20) { // Handling numbers 20-99
+            result.append(tens[number / 10]).append(" ");
+            number %= 10;
+        }else if (number > 0 && number < 10) {
+            result.append(units[number]).append(" ");
+        }
+
+//	        if(number > 0) {
+//	        	result.append(units[number]).append(" ");
+//	        }
+
+        return result.toString();
     }
 }

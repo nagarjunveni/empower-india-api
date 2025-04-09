@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class DonarDto {
 
     private Long id;
+    private String amountText;
     private String firstName;
     private String lastName;
     private String phoneNumber;
