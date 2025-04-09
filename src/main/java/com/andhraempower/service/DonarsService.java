@@ -120,6 +120,7 @@ public class DonarsService {
     public DonarAndProjectInfoDto getDonarInfo(Long donarId) {
         DonarAndProjectInfoDto donarAndProjectInfo = new DonarAndProjectInfoDto();
         donarAndProjectInfo.setDonarInfo(donarsRepository.findDonarInfo(donarId));
+        donarAndProjectInfo.getDonarInfo().setAmountText(donorAmountUpdate(donarAndProjectInfo.getDonarInfo().getAmount()));
         donarAndProjectInfo.setProjectsInfo(donarsRepository.findProjectInfo(donarId));
         return donarAndProjectInfo;
     }

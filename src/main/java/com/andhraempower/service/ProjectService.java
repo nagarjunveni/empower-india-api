@@ -299,9 +299,15 @@ public class ProjectService {
         return  searchedProject;
     }
 
-    public Page<DistrictMandalVillageProjectInfoDto> getDistrictMandalVillageProjects(Long districtId, Long mandalId, Long projectTypeId, String status, Pageable pageable) {
+    public Page<DistrictMandalVillageProjectInfoDto> getDistrictMandalVillageProjects(Long districtId, Long mandalId, Long projectTypeId, Long userId, String status, Pageable pageable) {
         log.info("Fetching all projects details.");
-        Page<DistrictMandalVillageProjectInfoDto> allProjects = projectRepository.getDistrictMandalVillageProjects(districtId,mandalId,projectTypeId,status,pageable);
+        Page<DistrictMandalVillageProjectInfoDto> allProjects = null;
+        if(userId != null ){   // fetching the details with user login
+            allProjects = projectRepository.getDistrictMandalVillageProjectsWithUserId(districtId,mandalId,projectTypeId,status,pageable);
+        } else{  // fetching the details with out user login
+            allProjects = projectRepository.getDistrictMandalVillageProjects(districtId,mandalId,projectTypeId,status,pageable);
+        }
+
         return allProjects;
     }
 }
