@@ -146,10 +146,10 @@ public class ProjectController {
             @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
             @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = "Server error while saving project")
     })
-    public ResponseEntity<String> updateProject(@RequestBody ProjectRequestDto projectRequestDto) {
+    public ResponseEntity<String> updateProject(@RequestPart("project") ProjectRequestDto projectRequestDto, @RequestPart(value = "projectImage", required = false) MultipartFile multipartFile) {
         try {
             log.debug("Request for updating project : {}", projectRequestDto);
-            projectService.updateProject(projectRequestDto, null);
+            projectService.updateProject(projectRequestDto, multipartFile);
             return ResponseEntity.ok("Project updates successfully!");
         }catch (IllegalArgumentException e){
             log.error("IllegalArgumentException while updating the project", e);
