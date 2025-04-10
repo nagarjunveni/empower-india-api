@@ -136,7 +136,7 @@ public class ProjectController {
         }
     }
 
-    @PutMapping(consumes = EmpowerConstants.APPLICATION_JSON, produces = EmpowerConstants.TEXT_PLAIN)
+    @PutMapping
     @Operation(summary = "updates existing project to the database.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = "Project Updated successfully"),

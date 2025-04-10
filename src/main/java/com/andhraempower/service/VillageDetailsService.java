@@ -275,12 +275,13 @@ public class VillageDetailsService {
     public VillageDemographicsDTO villageProjectDetails(Integer villageId) {
 
         VillageDemographics villageDemographics = villageDetailsRepository.findByVillageId(villageId);
-
-        VillageDemographicsDTO villageDemographicsDTO = VillageDemographicsDTO.fromEntity(villageDemographics);
-
-        Page<ProjectResponseDto> projectResponseDtos = projectService.searchProjects(null, null, Long.valueOf(villageDemographicsDTO.getVillageId()), null, null, null);
-        if (!projectResponseDtos.isEmpty()) {
-            villageDemographicsDTO.setProjectResponseList(projectResponseDtos.getContent());
+        VillageDemographicsDTO villageDemographicsDTO = null;
+        if (villageDemographics != null && villageDemographics.getVillageId() != null) {
+            villageDemographicsDTO = VillageDemographicsDTO.fromEntity(villageDemographics);
+            Page<ProjectResponseDto> projectResponseDtos = projectService.searchProjects(null, null, Long.valueOf(villageDemographicsDTO.getVillageId()), null, null, null);
+            if (!projectResponseDtos.isEmpty()) {
+                villageDemographicsDTO.setProjectResponseList(projectResponseDtos.getContent());
+            }
         }
 
         return villageDemographicsDTO;

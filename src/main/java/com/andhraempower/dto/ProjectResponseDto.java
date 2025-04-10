@@ -45,6 +45,8 @@ public class ProjectResponseDto {
     private List<CommitteeMembersDto> committeeMembersList = new ArrayList<>();
     private boolean statusImage;
 
+    private VillageProjectExpenseResponse villageProjectExpenseResponse;
+
     public ProjectResponseDto(Long id, String projectCategory, Integer projectCategoryId, String projectType
             , Long projectTypeId, String status, String location, Double latitude, Double longitude, Double projectEstimation
             , Double governmentShare, Double publicShare, Boolean isNew, String description, String createdBy

@@ -21,7 +21,7 @@ public class Finance {
     @Column(name = "village_project_id", nullable = false)
     private Integer villageProjectId;
 
-    @Column(name = "expense_category_id", nullable = false)
+    @Column(name = "expense_category_id")
     private Integer expenseCategoryId;
 
     @Column(name = "transaction_amount")
