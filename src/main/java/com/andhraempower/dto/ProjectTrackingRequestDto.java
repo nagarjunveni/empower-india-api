@@ -8,5 +8,5 @@ import lombok.*;
 @Setter
 public class ProjectTrackingRequestDto extends AbstractProjectTrackingDto {
     private long projectId;
-
+    private boolean publishToGallery;
 }

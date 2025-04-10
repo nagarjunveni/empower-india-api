@@ -1,12 +1,17 @@
 package com.andhraempower.controller;
 
 import com.andhraempower.constants.EmpowerConstants;
+import com.andhraempower.dto.GalleryDto;
 import com.andhraempower.entity.GalleryImage;
 import com.andhraempower.service.ImageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,75 +31,8 @@ public class GalleryImageController {
     @Autowired
     private ImageService imageService;
 
-    // Upload a single image
-    @PostMapping(value = "/uploadImage",produces = {EmpowerConstants.APPLICATION_JSON, EmpowerConstants.TEXT_PLAIN})
-    @Operation(summary = "Add single Image.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.BAD_REQUEST_CODE, description = EmpowerConstants.BAD_REQUEST_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.UNAUTHORIZED_CODE, description = EmpowerConstants.UNAUTHORIZED_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.FORBIDDEN_CODE, description = EmpowerConstants.FORBIDDEN_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
-    })
-    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file,
-                                              @RequestParam("eventType") String eventType,
-                                              @RequestParam("description") String description) {
-        try {
-            imageService.uploadImage(file, eventType, description);
-            return new ResponseEntity<>("Image uploaded successfully", HttpStatus.OK);
-        } catch (IOException e) {
-            return new ResponseEntity<>("Error uploading image", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // Upload multiple images
-    @PostMapping(value = "/uploadMultiple",produces = {EmpowerConstants.APPLICATION_JSON, EmpowerConstants.TEXT_PLAIN})
-    @Operation(summary = "Add multiple images.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.BAD_REQUEST_CODE, description = EmpowerConstants.BAD_REQUEST_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.UNAUTHORIZED_CODE, description = EmpowerConstants.UNAUTHORIZED_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.FORBIDDEN_CODE, description = EmpowerConstants.FORBIDDEN_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
-    })
-    public ResponseEntity<String> uploadMultipleImages(@RequestParam("files") List<MultipartFile> files,
-                                                       @RequestParam("eventType") String eventType,
-                                                       @RequestParam("description") String description) {
-        try {
-            imageService.uploadImages(files, eventType, description);
-            return new ResponseEntity<>("Images uploaded successfully", HttpStatus.OK);
-        } catch (IOException e) {
-            return new ResponseEntity<>("Error uploading images", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // Get a single image by ID
-    @GetMapping(value = "/{id}",produces = {EmpowerConstants.APPLICATION_JSON, EmpowerConstants.TEXT_PLAIN})
-    @Operation(summary = "Retrive image by id.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.BAD_REQUEST_CODE, description = EmpowerConstants.BAD_REQUEST_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.UNAUTHORIZED_CODE, description = EmpowerConstants.UNAUTHORIZED_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.FORBIDDEN_CODE, description = EmpowerConstants.FORBIDDEN_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
-    })
-    public ResponseEntity<byte[]> getImage(@PathVariable Long id) {
-        Optional<GalleryImage> imageOpt = imageService.getImage(id);
-        if (imageOpt.isPresent()) {
-            GalleryImage image = imageOpt.get();
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_TYPE,"image/jpeg" )
-                    .body(image.getImage());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-    }
-
     // Get all images (non-deleted)
-    @GetMapping(value = "/",produces = {EmpowerConstants.APPLICATION_JSON, EmpowerConstants.TEXT_PLAIN})
+    @GetMapping(value = "/all")
     @Operation(summary = "Retrive All images.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
@@ -104,28 +42,16 @@ public class GalleryImageController {
             @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
             @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
     })
-    public ResponseEntity<List<GalleryImage>> getAllImages() {
-        List<GalleryImage> images = imageService.getAllImages();
-        return ResponseEntity.ok(images);
+    public ResponseEntity<Page<GalleryDto>> getAllImages(@RequestParam(name = "districtId", required = false) Long districtId
+                                                        ,@RequestParam(name = "mandalId", required = false) Long mandalId
+                                                        ,@RequestParam(name = "villageId", required = false) Long villageId,
+                                                         @RequestParam(name = "page", defaultValue = "0") int page,
+                                                         @RequestParam(name = "size", defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.unsorted());
+        Page<GalleryDto> dtos = imageService.getAllImages(districtId,mandalId,villageId,pageable);
+
+        return ResponseEntity.ok(dtos);
     }
 
-    // Soft delete an image
-    @DeleteMapping(value = "/{id}",produces = {EmpowerConstants.APPLICATION_JSON, EmpowerConstants.TEXT_PLAIN})
-    @Operation(summary = "Delete image by id.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.BAD_REQUEST_CODE, description = EmpowerConstants.BAD_REQUEST_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.UNAUTHORIZED_CODE, description = EmpowerConstants.UNAUTHORIZED_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.FORBIDDEN_CODE, description = EmpowerConstants.FORBIDDEN_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
-            @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
-    })
-    public ResponseEntity<String> softDeleteImage(@PathVariable Long id) {
-        Optional<GalleryImage> imageOpt = imageService.softDeleteImage(id);
-        if (imageOpt.isPresent()) {
-            return new ResponseEntity<>("Image soft deleted successfully", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Image not found", HttpStatus.NOT_FOUND);
-        }
-    }
 }
