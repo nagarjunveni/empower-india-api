@@ -122,21 +122,6 @@ public class ProjectService {
             projectResponseDto.setSponsersList(new ArrayList<>());
         }
 
-        List<CommitteeMembers> committeeMembersList =  committeeService.getCommittee(projectResponseDto.getId());
-
-        if (committeeMembersList != null) {
-            projectResponseDto.setCommitteeMembersList(
-                    committeeMembersList.stream()
-                            .map(this::convertEntityToDto)
-                            .collect(Collectors.toList())
-            );
-        } else {
-            projectResponseDto.setCommitteeMembersList(new ArrayList<>());
-        }
-
-        VillageProjectExpenseResponse villageProjectExpenseResponse = financeService.getTransactionsForProject(projectResponseDto.getId());
-        projectResponseDto.setVillageProjectExpenseResponse(villageProjectExpenseResponse);
-
     }
 
     public CommitteeMembersDto convertEntityToDto(CommitteeMembers committeeMember) {
