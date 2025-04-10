@@ -146,11 +146,11 @@ public class UserService {
         return userRepository.findUsers(searchTerm, districtId, roleId).stream().map(UserResponseDto::new).collect(Collectors.toList());
     }
 
-    public void deactivateUser(UserRequestDto userRequestDto) {
-        User user = userRepository.findById(userRequestDto.getId())
-                .orElseThrow(() -> new UserNotFoundException("User does not exist with ID: " + userRequestDto.getId()));
+    public void deactivateUser(Long userId, Integer isActive) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User does not exist with ID: " + userId));
 
-        user.setIsEnabled(userRequestDto.getIsActive());
+        user.setIsEnabled(isActive);
         userRepository.save(user);
     }
 
