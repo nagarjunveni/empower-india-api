@@ -34,5 +34,7 @@ public class ProjectStatusTracking {
     @Column(name = "status_image", columnDefinition = "LONGBLOB")
     private byte[] image;
 
+    @Column(name = "publish_gallery")
+    private Boolean publishGallery = false;
 
 }

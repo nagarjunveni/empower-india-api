@@ -10,9 +10,11 @@ import lombok.*;
 public class ProjectTrackingResponseDto extends AbstractProjectTrackingDto{
 
     private byte[] statusImage;
+    private boolean publishToGallery;
 
     public ProjectTrackingResponseDto(ProjectStatusTracking projectStatusTracking) {
         super(projectStatusTracking);
         this.statusImage = projectStatusTracking.getImage();
+        this.publishToGallery = projectStatusTracking.getPublishGallery();
     }
 }

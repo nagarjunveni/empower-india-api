@@ -56,9 +56,11 @@ public class ProjectStatusTrackingService {
         projectStatusTracking.setCreatedDate(createdDate);
 
         if (file != null && !file.isEmpty()) {
+            if(projectTrackingRequestDto.isPublishToGallery()){
+                projectStatusTracking.setPublishGallery(projectTrackingRequestDto.isPublishToGallery());
+            }
             projectStatusTracking.setImage(file.getBytes());
         }
-
         return projectStatusTrackingRepository.saveAndFlush(projectStatusTracking);
     }
 }

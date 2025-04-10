@@ -43,13 +43,14 @@ public class ProjectResponseDto {
     private String statusCode;
     private byte[] projectImage;
     private List<CommitteeMembersDto> committeeMembersList = new ArrayList<>();
+    private boolean statusImage;
 
     public ProjectResponseDto(Long id, String projectCategory, Integer projectCategoryId, String projectType
             , Long projectTypeId, String status, String location, Double latitude, Double longitude, Double projectEstimation
             , Double governmentShare, Double publicShare, Boolean isNew, String description, String createdBy
             , String lastUpdatedBy, String villageName, Long villageId, String mandalName, Long mandalId, String districtName
             , Long districtId, String pinCode, boolean isCommitteeAdded, boolean isBankDetailsAdded, boolean isEstimationAdded,LocalDate estimateStartDate,
-             LocalDate estimateEndDate, LocalDate actualStartDate, LocalDate actualEndDate,String statusCode, byte[] projectImage
+             LocalDate estimateEndDate, LocalDate actualStartDate, LocalDate actualEndDate,String statusCode, byte[] projectImage, boolean statusImage
     ) {
         this.id = id;
         this.projectCategory = projectCategory;
@@ -83,6 +84,7 @@ public class ProjectResponseDto {
         this.actualEndDate = actualEndDate;
         this.statusCode = statusCode;
         this.projectImage = projectImage;
+        this.statusImage = statusImage;
     }
 
     public ProjectResponseDto(Long id, String projectCategory, Integer projectCategoryId, String projectType

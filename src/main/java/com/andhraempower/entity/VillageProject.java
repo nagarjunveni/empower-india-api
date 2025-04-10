@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.context.annotation.Lazy;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -98,4 +99,6 @@ public class VillageProject {
     @Lazy
     private List<VillageProjectDonar> villageProjectDonars;
 
+    @Column(name = "last_updated_date", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    private LocalDateTime lastUpdatedDate;
 }
