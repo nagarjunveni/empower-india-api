@@ -9,7 +9,8 @@ public enum StatusEnum {
     COMPLETED("Completed"),
     OPEN("New"), // Open is temporary to support existing data
     DRAFT("Draft"),
-    HOLD("Hold");
+    HOLD("Hold"),
+    WFA("WFA");
 
     private final String statusDescription;
 
