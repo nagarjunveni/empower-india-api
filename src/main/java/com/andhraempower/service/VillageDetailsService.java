@@ -278,7 +278,7 @@ public class VillageDetailsService {
         VillageDemographicsDTO villageDemographicsDTO = null;
         if (villageDemographics != null && villageDemographics.getVillageId() != null) {
             villageDemographicsDTO = VillageDemographicsDTO.fromEntity(villageDemographics);
-            Page<ProjectResponseDto> projectResponseDtos = projectService.searchProjects(null, null, Long.valueOf(villageDemographicsDTO.getVillageId()), null, null, null);
+            Page<ProjectResponseDto> projectResponseDtos = projectService.getProjectsByVillageId(Long.valueOf(villageDemographicsDTO.getVillageId()));
             if (!projectResponseDtos.isEmpty()) {
                 villageDemographicsDTO.setProjectResponseList(projectResponseDtos.getContent());
             }

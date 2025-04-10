@@ -155,11 +155,39 @@ public class ProjectService {
         return dto;
     }
 
-    public Page<ProjectResponseDto> searchProjects(Long districtCode, Long mandalCode, Long villageCode,Long id, String statusCode, Pageable pageable) {
+    public Page<ProjectResponseDto> searchProjects(Long districtCode, Long mandalCode, Long villageCode, Long id, String statusCode, Pageable pageable) {
         log.info("searchProjectsByDistrictMandalVillageCode districtCode {}, mandalCode{}, villageCode {}", districtCode, mandalCode, villageCode);
-        Page<ProjectResponseDto> searchedProjects = projectRepository.searchProjects(districtCode, mandalCode, villageCode,id,statusCode, pageable);
+        Page<ProjectResponseDto> searchedProjects = projectRepository.searchProjects(districtCode, mandalCode, villageCode, id, statusCode, pageable);
         searchedProjects.stream().forEach(this::setAdditonalDetailsToProjectResponse);
         return searchedProjects;
+    }
+
+    public Page<ProjectResponseDto> getProjectsByVillageId(Long villageId) {
+        log.info("getProjectsByVillageId villageId {} ", villageId);
+        Page<ProjectResponseDto> searchedProjects = projectRepository.searchProjects(null, null, villageId, null, null, null);
+
+        if (searchedProjects != null && searchedProjects.hasContent()) {
+            searchedProjects.forEach(this::setCommitteeAndExpenseDetails);
+        } else {
+            log.info("No projects found for villageId {}", villageId);
+        }
+        return searchedProjects;
+    }
+
+    private void setCommitteeAndExpenseDetails(ProjectResponseDto projectResponseDto) {
+        List<CommitteeMembers> committeeMembersList = committeeService.getCommittee(projectResponseDto.getId());
+        if (committeeMembersList != null) {
+            projectResponseDto.setCommitteeMembersList(
+                    committeeMembersList.stream()
+                            .map(this::convertEntityToDto)
+                            .collect(Collectors.toList())
+            );
+        } else {
+            projectResponseDto.setCommitteeMembersList(new ArrayList<>());
+        }
+
+        VillageProjectExpenseResponse villageProjectExpenseResponse = financeService.getTransactionsForProject(projectResponseDto.getId());
+        projectResponseDto.setVillageProjectExpenseResponse(villageProjectExpenseResponse);
     }
 
     private VillageProject getUpdatedProject(VillageProject villageProject, ProjectRequestDto projectRequestDto, MultipartFile multipartFile) throws IOException {
