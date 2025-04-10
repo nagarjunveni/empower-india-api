@@ -278,9 +278,11 @@ public class VillageDetailsService {
 
         VillageDemographicsDTO villageDemographicsDTO = VillageDemographicsDTO.fromEntity(villageDemographics);
 
-        Page<ProjectResponseDto> projectResponseDtos = projectService.searchProjects(null, null, Long.valueOf(villageDemographicsDTO.getVillageId()), null, null, null);
-        if (!projectResponseDtos.isEmpty()) {
-            villageDemographicsDTO.setProjectResponseList(projectResponseDtos.getContent());
+        if (villageDemographicsDTO != null && villageDemographicsDTO.getVillageId() != null) {
+            Page<ProjectResponseDto> projectResponseDtos = projectService.searchProjects(null, null, Long.valueOf(villageDemographicsDTO.getVillageId()), null, null, null);
+            if (!projectResponseDtos.isEmpty()) {
+                villageDemographicsDTO.setProjectResponseList(projectResponseDtos.getContent());
+            }
         }
 
         return villageDemographicsDTO;
