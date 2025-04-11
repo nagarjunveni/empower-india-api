@@ -67,4 +67,9 @@ public class LookupServiceImpl implements LookupService {
                 "institutions", this.lookupDAO.getInstitutionsLookups());
     }
 
+    @Override
+    public List<ProjectStatusLookup> getProjectStatusLookup() {
+        return this.lookupDAO.getProjectStatusLookup();
+    }
+
 }
