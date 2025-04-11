@@ -53,12 +53,16 @@ public class DonarsService {
     private final StatusChangePublisher statusChangePublisher;
 
     private static final String[] units = {
-            "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"
+            "", "One", "Two", "Three", "Four", "Five",
+            "Six", "Seven", "Eight", "Nine", "Ten", "Eleven",
+            "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen",
+            "Seventeen", "Eighteen", "Nineteen"
     };
+
     private static final String[] tens = {
-            "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
+            "", "", "Twenty", "Thirty", "Forty", "Fifty",
+            "Sixty", "Seventy", "Eighty", "Ninety"
     };
-    private static final String[] powers = { "", "Thousand", "Lakh", "Crore" };
 
     public Donar addDonars(DonarDto donars, MultipartFile file) throws IOException {
         Donar donar = donars.fromDto();
@@ -120,7 +124,7 @@ public class DonarsService {
 
         Page<DonarDto> donarList = donarsRepository.findDonars(districtId,mandalId,villageId,pageable);
         for(DonarDto donarDto : donarList){
-            String amountInText = donorAmountUpdate(donarDto.getAmount());
+            String amountInText = convertAmountToText(donarDto.getAmount());
             donarDto.setAmountText(amountInText);
         }
         return donarList;
@@ -129,7 +133,7 @@ public class DonarsService {
     public DonarAndProjectInfoDto getDonarInfo(Long donarId) {
         DonarAndProjectInfoDto donarAndProjectInfo = new DonarAndProjectInfoDto();
         donarAndProjectInfo.setDonarInfo(donarsRepository.findDonarInfo(donarId));
-        donarAndProjectInfo.getDonarInfo().setAmountText(donorAmountUpdate(donarAndProjectInfo.getDonarInfo().getAmount()));
+        donarAndProjectInfo.getDonarInfo().setAmountText(convertAmountToText(donarAndProjectInfo.getDonarInfo().getAmount()));
         donarAndProjectInfo.setProjectsInfo(donarsRepository.findProjectInfo(donarId));
         return donarAndProjectInfo;
     }
@@ -160,73 +164,43 @@ public class DonarsService {
                 .build();
     }
 
-    private String donorAmountUpdate(double amount) {
-
-        if (amount == 0) {
-            return "Zero Rupees";
+    private static String convertToWords(int n, String suffix) {
+        String str = "";
+        if (n > 19) {
+            str += tens[n / 10] + " " + units[n % 10];
+        } else {
+            str += units[n];
         }
 
-        // Split into integer and fractional parts
-        int integerPart = (int) amount;
-        int fractionalPart = (int) ((amount - integerPart) * 100);
-
-        // Convert integer part and fractional part to text
-        String integerText = convertIntegerToText(integerPart,0) + " rupees" ;
-
-
-        // Return final result
-        return integerText;
+        if (!str.isEmpty()) {
+            str += " " + suffix + " ";
+        }
+        return str;
     }
 
-    private static String convertIntegerToText(int number, int placeIndex) {
-        if (number == 0) {
-            return "";
+    public static String convertAmountToText(double amount) {
+        long num = (long) amount;
+        int paise = (int) Math.round((amount - num) * 100);
+
+        String result = "";
+
+        result += convertToWords((int) (num / 10000000), "Crore");
+        result += convertToWords((int) ((num / 100000) % 100), "Lakh");
+        result += convertToWords((int) ((num / 1000) % 100), "Thousand");
+        result += convertToWords((int) ((num / 100) % 10), "Hundred");
+
+        if (num > 100 && (num % 100) > 0) {
+            result += "and ";
         }
 
-        StringBuilder result = new StringBuilder();
+        result += convertToWords((int) (num % 100), "");
 
-        // Process groups of 3 digits
-        while (number > 0) {
-            if (number % 1000 >= 0 && placeIndex == 0) { // Thousand
-                result.insert(0, convertLessThanThousand(number % 1000) + " " + powers[placeIndex] + " ");
-                number /= 1000;
-            }else if(number % 100 >= 0 && placeIndex > 0) { // lakh & crore
-                //System.out.println( result.insert(0, convertLessThanThousand(number % 1000) + " " + powers[placeIndex] + " "));
+        result = result.trim() + " Rupees";
 
-                String text = convertLessThanThousand(number % 100);
-                result.insert(0, text.trim() != "" ? (text + powers[placeIndex] + " " ): "");
-                number /= 100;
-            }
-
-            placeIndex++;
+        if (paise > 0) {
+            result += " and " + convertToWords(paise, "") + " Paise";
         }
 
-        return result.toString().trim();
-    }
-
-    // Converts numbers less than 1000 to words (handles hundreds, tens, and units)
-    private static String convertLessThanThousand(int number) {
-        StringBuilder result = new StringBuilder();
-
-        if (number >= 100) {
-            result.append(units[number / 100]).append(" Hundred ");
-            number %= 100;
-        }
-
-        // Handling numbers from 10-19 (teen numbers)
-        if (number >= 10 && number <= 19) {
-            result.append(units[number]).append(" ");
-        } else if (number >= 20) { // Handling numbers 20-99
-            result.append(tens[number / 10]).append(" ");
-            number %= 10;
-        }else if (number > 0 && number < 10) {
-            result.append(units[number]).append(" ");
-        }
-
-//	        if(number > 0) {
-//	        	result.append(units[number]).append(" ");
-//	        }
-
-        return result.toString();
+        return result.trim();
     }
 }
