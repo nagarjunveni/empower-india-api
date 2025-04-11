@@ -14,7 +14,7 @@ public class Vendors {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -27,4 +27,7 @@ public class Vendors {
 
     @Column(name = "address")
     private String address;
+
+    @Column(name = "project_id")
+    private Long projectId;
 }
