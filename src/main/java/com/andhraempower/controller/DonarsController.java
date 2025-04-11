@@ -85,7 +85,7 @@ public class DonarsController {
             @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
             @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
     })
-    public List<Donar> getDonars(@RequestParam(value = "projectId",required = false) Long projectId) {
+    public List<DonarDto> getDonars(@RequestParam(value = "projectId",required = false) Long projectId) {
         return donarsService.getDonars(projectId);
     }
 

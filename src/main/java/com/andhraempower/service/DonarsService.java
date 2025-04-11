@@ -90,15 +90,24 @@ public class DonarsService {
 
     }
 
-    public List<Donar> getDonars(Long projectId) {
+    public List<DonarDto> getDonars(Long projectId) {
+
         return Optional.ofNullable(projectId)
                 .map(id -> {
                     List<VillageProjectDonar> byVillageProjectId = villageProjectDonarRepository.getByVillageProjectId(id);
                     if(byVillageProjectId != null && !byVillageProjectId.isEmpty()){
-                        return byVillageProjectId.stream().map(VillageProjectDonar::getDonar).collect(Collectors.toList());
+                        return byVillageProjectId.stream().map(villageProjectDonar -> new DonarDto(
+                                villageProjectDonar.getId(),villageProjectDonar.getDonar().getImage(),villageProjectDonar.getDonar().getFirstName(),villageProjectDonar.getDonar().getLastName(),
+                                villageProjectDonar.getDonar().getPhoneNumber(),villageProjectDonar.getDonar().getEmail(),villageProjectDonar.getDonar().getDescription(),
+                                villageProjectDonar.getDonar().getAddress(),villageProjectDonar.getAmount(),villageProjectDonar.getMemoryOf(),villageProjectDonar.getModeOfPayment()
+                        )).collect(Collectors.toList());
                     }
-                    return new ArrayList<Donar>();
-                }).orElse(donarsRepository.findAll());
+                    return new ArrayList<DonarDto>();
+                }).orElse(donarsRepository.findAll().stream().map(donar -> new DonarDto(
+                        donar.getId(),donar.getImage(),donar.getFirstName(),donar.getLastName(),
+                        donar.getPhoneNumber(),donar.getEmail(),donar.getDescription(),
+                        donar.getAddress(),null
+                )).collect(Collectors.toList()));
     }
 
     @Transactional
