@@ -57,6 +57,34 @@ public class DonarDto {
 
     }
 
+    public DonarDto(Long id, byte[] image, String firstName, String lastName, String phoneNumber, String email, String description,
+                    String address,Double amount,String memoryOf,String modeOfPayment) {
+        this.id = id;
+        this.image = image;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.description = description;
+        this.address = address;
+        this.amount = amount;
+        this.memoryOf = memoryOf;
+        this.modeOfPayment = modeOfPayment;
+    }
+
+    public DonarDto(Long id, byte[] image, String firstName, String lastName, String phoneNumber, String email, String description,
+                    String address,Long villageId) {
+        this.id = id;
+        this.image = image;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.description = description;
+        this.address = address;
+        this.villageId = villageId;
+    }
+
     public Donar fromDto(){
         Donar donar = new Donar();
         donar.setId(this.id);
