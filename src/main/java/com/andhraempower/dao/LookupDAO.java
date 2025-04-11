@@ -36,4 +36,6 @@ public interface LookupDAO {
 
     List<InstitutionsLookups> getInstitutionsLookups();
 
+    List<ProjectStatusLookup> getProjectStatusLookup();
+
 }

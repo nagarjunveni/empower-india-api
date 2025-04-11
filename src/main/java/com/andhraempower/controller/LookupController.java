@@ -93,5 +93,20 @@ public class LookupController {
         return ResponseEntity.ok().body(lookupService.getVillageLooksUps());
     }
 
+
+    @GetMapping(value = "/project-status",produces = {EmpowerConstants.APPLICATION_JSON})
+    @Operation(summary = "List of project status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.BAD_REQUEST_CODE, description = EmpowerConstants.BAD_REQUEST_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.UNAUTHORIZED_CODE, description = EmpowerConstants.UNAUTHORIZED_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.FORBIDDEN_CODE, description = EmpowerConstants.FORBIDDEN_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
+    })
+    public ResponseEntity<List<ProjectStatusLookup>> getProjectStatus() {
+        return ResponseEntity.ok().body(lookupService.getProjectStatusLookup());
+    }
+
 }
 

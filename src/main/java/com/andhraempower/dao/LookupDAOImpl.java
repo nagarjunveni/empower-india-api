@@ -137,4 +137,10 @@ public class LookupDAOImpl implements LookupDAO {
         TypedQuery<InstitutionsLookups> theQuery = entityManager.createQuery("FROM InstitutionsLookups order by name", InstitutionsLookups.class);
         return theQuery.getResultList();
     }
+
+    @Override
+    public List<ProjectStatusLookup> getProjectStatusLookup() {
+        TypedQuery<ProjectStatusLookup> theQuery = entityManager.createQuery("FROM ProjectStatusLookup", ProjectStatusLookup.class);
+        return theQuery.getResultList();
+    }
 }

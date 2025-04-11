@@ -24,4 +24,6 @@ public interface LookupService {
 
     Map<String, List<?>> getVillageLooksUps();
 
+    List<ProjectStatusLookup> getProjectStatusLookup();
+
 }
