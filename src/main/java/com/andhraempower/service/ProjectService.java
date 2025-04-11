@@ -93,7 +93,7 @@ public class ProjectService {
     public Page<ProjectResponseDto> getProjects(Pageable pageable) {
         log.info("Fetching all projects details.");
         Page<ProjectResponseDto> allProjects = projectRepository.findAllProjects(pageable);
-        // commented below code, this is only fetch project info and counts for Projects dashboard, So need to fetch AdditonalDetailsToProjectResponse
+        // commented below code, this is only fetch project info and counts for Projects dashboard, So no need to fetch AdditonalDetailsToProjectResponse
        // allProjects.stream().forEach(this::setAdditonalDetailsToProjectResponse);
         return allProjects;
     }
