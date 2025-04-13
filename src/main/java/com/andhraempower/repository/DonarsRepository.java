@@ -28,7 +28,8 @@ public interface DonarsRepository extends JpaRepository<Donar, Integer> {
           "LEFT JOIN VillageLookup vl ON vpl.villageProjectId = vl.id " +
           "LEFT JOIN MandalLookup ml ON vl.mandalId = ml.id " +
           "LEFT JOIN DistrictLookup dl ON ml.districtId = dl.id "+
-          "WHERE (:districtId IS NULL OR dl.id = :districtId)  "+
+          "WHERE  d.image IS NOT NULL " +
+          "AND (:districtId IS NULL OR dl.id = :districtId)  "+
           "AND (:mandalId IS NULL OR ml.id = :mandalId) " +
           "AND (:villageId IS NULL OR vl.id = :villageId) " +
           "GROUP BY d.id, d.image, d.firstName, d.lastName, d.phoneNumber, d.email, d.address, vl.id, vl.name, ml.id, ml.name, dl.id, dl.name " +

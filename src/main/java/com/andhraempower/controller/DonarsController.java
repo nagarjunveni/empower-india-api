@@ -147,8 +147,9 @@ public class DonarsController {
                                                     @RequestParam(name = "mandalId", required = false) Long mandalId,
                                                     @RequestParam(name = "villageId", required = false) Long villageId,
                                                     @RequestParam(name = "page", defaultValue = "0") int page,
-                                                    @RequestParam(name = "size", defaultValue = "10") int size) {
-        return ResponseEntity.ok().body(donarsService.getDonars(districtId, mandalId,villageId, page, size));
+                                                    @RequestParam(name = "size", defaultValue = "10") int size,
+                                                    @RequestParam(name = "topN", required = false) Integer topN) {
+        return ResponseEntity.ok().body(donarsService.getDonars(districtId, mandalId,villageId, page, size, topN));
     }
 
 
