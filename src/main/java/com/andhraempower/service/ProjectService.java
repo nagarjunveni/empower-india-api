@@ -316,13 +316,12 @@ public class ProjectService {
     }
 
 
-    public ProjectResponseDto getProjectById(String id) {
-        log.info("searchProjectBy ID {}", id);
-        ProjectResponseDto searchedProject = projectRepository.findByProjectId(Long.valueOf(id));
-        if(searchedProject != null){
+    public ProjectResponseDto getProjectById(Long projectId) {
+        ProjectResponseDto searchedProject = projectRepository.findByProjectId(projectId);
+        if (searchedProject != null) {
             setAdditonalDetailsToProjectResponse(searchedProject);
         }
-        return  searchedProject;
+        return searchedProject;
     }
 
     public Page<DistrictMandalVillageProjectInfoDto> getDistrictMandalVillageProjects(Long districtId, Long mandalId, Long projectTypeId, Long userId, String status, Pageable pageable) {
@@ -335,5 +334,18 @@ public class ProjectService {
         }
 
         return allProjects;
+    }
+
+    public void deleteProject(Long projectId) {
+        int rowsUpdated = projectRepository.updateStatusWithAudit(
+                projectId,
+                1,
+                "Admin",
+                LocalDateTime.now()
+        );
+
+        if (rowsUpdated == 0) {
+            throw new EntityNotFoundException("Project not found with ID: " + projectId);
+        }
     }
 }
