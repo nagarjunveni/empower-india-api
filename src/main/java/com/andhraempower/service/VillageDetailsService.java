@@ -275,14 +275,20 @@ public class VillageDetailsService {
     public VillageDemographicsDTO villageProjectDetails(Integer villageId) {
 
         VillageDemographics villageDemographics = villageDetailsRepository.findByVillageId(villageId);
-        VillageDemographicsDTO villageDemographicsDTO = null;
+        VillageDemographicsDTO villageDemographicsDTO = new VillageDemographicsDTO();
+
+        Page<ProjectResponseDto> projectResponseDtos = projectService.getProjectsByVillageId(Long.valueOf(villageId));
+        if (!projectResponseDtos.isEmpty()) {
+            villageDemographicsDTO.setProjectResponseList(projectResponseDtos.getContent());
+        }
+
         if (villageDemographics != null && villageDemographics.getVillageId() != null) {
             villageDemographicsDTO = VillageDemographicsDTO.fromEntity(villageDemographics);
-            Page<ProjectResponseDto> projectResponseDtos = projectService.getProjectsByVillageId(Long.valueOf(villageDemographicsDTO.getVillageId()));
-            if (!projectResponseDtos.isEmpty()) {
-                villageDemographicsDTO.setProjectResponseList(projectResponseDtos.getContent());
-            }
-        }
+//            Page<ProjectResponseDto> projectResponseDtos = projectService.getProjectsByVillageId(Long.valueOf(villageDemographicsDTO.getVillageId()));
+//            if (!projectResponseDtos.isEmpty()) {
+//                villageDemographicsDTO.setProjectResponseList(projectResponseDtos.getContent());
+//            }
+       }
 
         return villageDemographicsDTO;
     }

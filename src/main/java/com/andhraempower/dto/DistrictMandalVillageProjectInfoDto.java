@@ -32,7 +32,7 @@ public class DistrictMandalVillageProjectInfoDto {
     private Integer otherFemalePopulation;
 
     public DistrictMandalVillageProjectInfoDto(Long districtId, String districtName, Long mandalId, String mandalName, Long villageId, String villageName,
-                                               Long villageProjectId, Long inprogress, Long completed, Long waitingSponsers, Long hold
+                                               Long villageProjectId, Long inprogress, Long completed, Long waitingSponsers
                             , Long villageDemographicsId, Integer totalPopulation, Integer scMalePopulation, Integer scFemalePopulation
                             , Integer stMalePopulation, Integer stFemalePopulation, Integer bcMalePopulation, Integer bcFemalePopulation, Integer ocMalePopulation,
                                                Integer ocFemalePopulation, Integer otherMalePopulation, Integer otherFemalePopulation
@@ -47,7 +47,6 @@ public class DistrictMandalVillageProjectInfoDto {
         this.inprogress = inprogress;
         this.completed = completed;
         this.waitingSponsers = waitingSponsers;
-        this.hold = hold;
         this.villageDemographicsId = villageDemographicsId;
         this.totalPopulation = totalPopulation;
         this.scMalePopulation = scMalePopulation;

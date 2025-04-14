@@ -166,7 +166,6 @@ public interface ProjectRepository extends JpaRepository<VillageProject, Long> {
             "COUNT(CASE WHEN vp.statusCode like upper('%wip%') THEN 1 END) , " +
             "COUNT(CASE WHEN vp.statusCode like upper('%completed%') THEN 1 END) , " +
             "COUNT(CASE WHEN vp.statusCode like upper('%wfd%') THEN 1 END) , " +
-            "COUNT(CASE WHEN vp.statusCode like upper('%hold%') THEN 1 END) ," +
             "vd.id " +
             ", vd.totalPopulation " +
             ",vd.scMale, vd.scFemale,vd.stMale,vd.stFemale, vd.bcMale,vd.bcFemale, " +
@@ -184,8 +183,7 @@ public interface ProjectRepository extends JpaRepository<VillageProject, Long> {
             "group by dl.id,ml.id,vl.id,vp.id,vd.id "+
             "HAVING COUNT(CASE WHEN vp.statusCode like upper('%wip%') THEN 1 END) > 0 "+
             "OR COUNT(CASE WHEN vp.statusCode like upper('%completed%') THEN 1 END) > 0 "+
-            "OR COUNT(CASE WHEN vp.statusCode like upper('%wfd%') THEN 1 END) > 0 "+
-            "OR COUNT(CASE WHEN vp.statusCode like upper('%hold%') THEN 1 END) > 0")
+            "OR COUNT(CASE WHEN vp.statusCode like upper('%wfd%') THEN 1 END) > 0 ")
     Page<DistrictMandalVillageProjectInfoDto> getDistrictMandalVillageProjects(@Param("districtId") Long districtId, @Param("mandalId") Long mandalId
             , @Param("projectTypeId") Long projectTypeId, @Param("statusCode") String statusCode, Pageable pageable);
 
