@@ -242,27 +242,8 @@ public class ProjectController {
             @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
             @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
     })
-    public ResponseEntity<Object> getProjectById(@RequestParam ("projectId") String projectId) {
-        try {
-            if (projectId != null & projectId != "") {
-                Integer.parseInt(projectId);
-                ProjectResponseDto project = projectService.getProjectById(projectId);
-                log.debug("Projects Page: {}", project);
-                if(project == null){
-                    return ResponseEntity.ok("Project not found for the project id "+projectId);
-                }else{
-                    return ResponseEntity.ok(project);
-                }
-
-            } else {
-                return ResponseEntity.badRequest().body("Project Id empty or blank");
-            }
-        } catch (NumberFormatException e) {
-            return ResponseEntity.badRequest().body("Invalid number: " + projectId);
-        } catch (Exception e){
-            log.error("Error while fetching project {}", e);
-            return ResponseEntity.internalServerError().build();
-        }
+    public ResponseEntity<ProjectResponseDto> getProjectById(@RequestParam("projectId") Long projectId) {
+        return ResponseEntity.ok(projectService.getProjectById(projectId));
     }
 
     /**
@@ -319,6 +300,22 @@ public class ProjectController {
             log.error("Error while fetching projects", e);
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+
+    @DeleteMapping("/{projectId}")
+    @Operation(summary = "Deletes a project based on ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = "Project deleted successfully"),
+            @ApiResponse(responseCode = EmpowerConstants.BAD_REQUEST_CODE, description = "Invalid project ID"),
+            @ApiResponse(responseCode = EmpowerConstants.UNAUTHORIZED_CODE, description = EmpowerConstants.UNAUTHORIZED_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.FORBIDDEN_CODE, description = EmpowerConstants.FORBIDDEN_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = "Server error while deleting project")
+    })
+    public ResponseEntity<String> deleteProject(@PathVariable("projectId") Long projectId) {
+            projectService.deleteProject(projectId);
+        return ResponseEntity.ok("Deleted successfully");
     }
 
 }

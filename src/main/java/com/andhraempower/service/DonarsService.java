@@ -119,8 +119,14 @@ public class DonarsService {
         villageProjectDonarRepository.deleteByIdAndVillageProjectId(committeeId, projectId);
     }
 
-    public Page<DonarDto> getDonars(Long districtId, Long mandalId, Long villageId, Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.unsorted());
+    public Page<DonarDto> getDonars(Long districtId, Long mandalId, Long villageId, Integer page, Integer size, Integer topN) {
+        Pageable pageable;
+
+        if (topN != null && topN > 0) {
+            pageable = PageRequest.of(0, topN,  Sort.unsorted());
+        } else {
+            pageable = PageRequest.of(page, size, Sort.unsorted());
+        }
 
         Page<DonarDto> donarList = donarsRepository.findDonars(districtId,mandalId,villageId,pageable);
         for(DonarDto donarDto : donarList){

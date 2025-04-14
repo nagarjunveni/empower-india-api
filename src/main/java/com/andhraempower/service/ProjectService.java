@@ -9,6 +9,7 @@ import com.andhraempower.events.StatusChangePublisher;
 import com.andhraempower.repository.ProjectRepository;
 import com.andhraempower.repository.VillageProjectDonarRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import static com.andhraempower.constants.ProjectWorkFlowStatus.NEW_PROJECT_CREA
 @AllArgsConstructor
 @Service
 @Slf4j
+@Transactional
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
@@ -52,16 +54,8 @@ public class ProjectService {
         log.info("Saving new project: {}", projectRequestDto);
         Optional<VillageLookup> village = getVillageLookup(projectRequestDto.getVillageId());
         Optional<CategoryLookup> category = getCategoryLookup(projectRequestDto.getProjectCategoryId());
-        VillageProject project = getVillageProject(projectRequestDto, category, village);
-        if(projectRequestDto.getProjectEstimation() != null &&
-                projectRequestDto.getProjectEstimation() > 0) {
-            project.setStatusCode(StatusEnum.WFD.name());
-        } else {
-            project.setStatusCode(StatusEnum.DRAFT.name());
-        }
-        if(multipartFile != null && !multipartFile.isEmpty()) {
-            project.setProjectImage(multipartFile.getBytes());
-        }
+        VillageProject project = getVillageProject(projectRequestDto, category, village, multipartFile );
+
         VillageProject villageProject = projectRepository.save(project);
         log.info("New Project saved successfully!");
         statusChangePublisher.publishStatusChange(new StatusChangeEvent(villageProject.getId(), NEW_PROJECT_CREATED, USER_ADMIN, LocalDateTime.now()));
@@ -98,7 +92,7 @@ public class ProjectService {
         return allProjects;
     }
 
-    private void setAdditonalDetailsToProjectResponse(ProjectResponseDto projectResponseDto) {
+    private void setAdditionalDetailsToProjectResponse(ProjectResponseDto projectResponseDto) {
         projectResponseDto.setStatus(StatusEnum.valueOf(projectResponseDto.getStatus().toUpperCase()).getStatusDescription());
         Double sponsereddAmount = 0d;
         List<VillageProjectDonar> byVillageProjectId = villageProjectDonarRepository.getByVillageProjectId(projectResponseDto.getId());
@@ -218,16 +212,27 @@ public class ProjectService {
 
     }
 
-    private static VillageProject getVillageProject(ProjectRequestDto projectRequestDto
-            , Optional<CategoryLookup> category, Optional<VillageLookup> village) {
+    private static void validateInputs(ProjectRequestDto projectRequestDto,
+                                       Optional<CategoryLookup> category,
+                                       Optional<VillageLookup> village) {
         if (village.isEmpty()) {
-            throw new IllegalArgumentException("Invalid Village Id : " + projectRequestDto.getVillageId());
+            throw new IllegalArgumentException("Invalid Village Id: " + projectRequestDto.getVillageId());
         }
-        if(category.isEmpty()) {
-            throw new IllegalArgumentException("Invalid Category Id : " + projectRequestDto.getProjectCategoryId());
+        if (category.isEmpty()) {
+            throw new IllegalArgumentException("Invalid Category Id: " + projectRequestDto.getProjectCategoryId());
         }
+        }
+
+    private static VillageProject getVillageProject(ProjectRequestDto projectRequestDto,
+                                                    Optional<CategoryLookup> category,
+                                                    Optional<VillageLookup> village,
+                                                    MultipartFile multipartFile) {
+        // Validate required fields
+        validateInputs(projectRequestDto, category, village);
+
         ProjectTypeLookup projectTypeLookup = getProjectTypeLookup(projectRequestDto, category);
-        return VillageProject.builder()
+
+        VillageProject.VillageProjectBuilder builder = VillageProject.builder()
                 .location(projectRequestDto.getLocation())
                 .latitude(projectRequestDto.getLatitude())
                 .longitude(projectRequestDto.getLongitude())
@@ -247,7 +252,17 @@ public class ProjectService {
                 .actualStartDate(projectRequestDto.getActualStartDate())
                 .actualEndDate(projectRequestDto.getActualEndDate())
                 .statusCode(projectRequestDto.getStatusCode())
-                .build();
+                .isDeleted(0);
+
+        if (multipartFile != null && !multipartFile.isEmpty()) {
+            try {
+                builder.projectImage(multipartFile.getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to process image file", e);
+            }
+        }
+
+        return builder.build();
     }
 
     private static ProjectTypeLookup getProjectTypeLookup(ProjectRequestDto projectRequestDto, Optional<CategoryLookup> category) {
@@ -264,13 +279,13 @@ public class ProjectService {
 
     public Page<ProjectResponseDto> getProjectsByProjectType(Long projectTypeId, Pageable pageable) {
         Page<ProjectResponseDto> searchedProjects = projectRepository.findByProjectTypeLookupId(projectTypeId, pageable);
-        searchedProjects.stream().forEach(this::setAdditonalDetailsToProjectResponse);
+        searchedProjects.stream().forEach(this::setAdditionalDetailsToProjectResponse);
         return searchedProjects;
     }
 
     public Page<ProjectResponseDto> getProjectsByProjectStatus(String status, Pageable pageable) {
         Page<ProjectResponseDto> searchedProjects = projectRepository.findByStatus(status, pageable);
-        searchedProjects.stream().forEach(this::setAdditonalDetailsToProjectResponse);
+        searchedProjects.stream().forEach(this::setAdditionalDetailsToProjectResponse);
         return searchedProjects;
     }
 
@@ -316,13 +331,12 @@ public class ProjectService {
     }
 
 
-    public ProjectResponseDto getProjectById(String id) {
-        log.info("searchProjectBy ID {}", id);
-        ProjectResponseDto searchedProject = projectRepository.findByProjectId(Long.valueOf(id));
-        if(searchedProject != null){
-            setAdditonalDetailsToProjectResponse(searchedProject);
+    public ProjectResponseDto getProjectById(Long projectId) {
+        ProjectResponseDto searchedProject = projectRepository.findByProjectId(projectId);
+        if (searchedProject != null) {
+            setAdditionalDetailsToProjectResponse(searchedProject);
         }
-        return  searchedProject;
+        return searchedProject;
     }
 
     public Page<DistrictMandalVillageProjectInfoDto> getDistrictMandalVillageProjects(Long districtId, Long mandalId, Long projectTypeId, Long userId, String status, Pageable pageable) {
@@ -330,11 +344,24 @@ public class ProjectService {
         Page<DistrictMandalVillageProjectInfoDto> allProjects = null;
         if(userId != null ){   // fetching the details with user login
             allProjects = projectRepository.getDistrictMandalVillageProjectsWithUserId(districtId,mandalId,projectTypeId,status,pageable);
-        } else{  // fetching the details with out user login
+        } else{  // fetching the details without user login
             allProjects = projectRepository.getDistrictMandalVillageProjects(districtId,mandalId,projectTypeId,status,pageable);
         }
 
         return allProjects;
+    }
+
+    public void deleteProject(Long projectId) {
+        int rowsUpdated = projectRepository.updateStatusWithAudit(
+                projectId,
+                1,
+                "Admin",
+                LocalDateTime.now()
+        );
+
+        if (rowsUpdated == 0) {
+            throw new EntityNotFoundException("Project not found with ID: " + projectId);
+        }
     }
 
     public List<DistrictDto> getProjectsWithDistricts() {
