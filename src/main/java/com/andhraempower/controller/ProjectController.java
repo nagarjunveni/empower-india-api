@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Objects;
 
 @CrossOrigin
@@ -273,6 +274,28 @@ public class ProjectController {
 
             log.debug("Projects Page: {}", projects);
             return ResponseEntity.ok(projects);
+        }catch (Exception e){
+            log.error("Error while fetching projects", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+
+    @GetMapping(value = "projects-count-by-district", produces = {EmpowerConstants.APPLICATION_JSON, EmpowerConstants.TEXT_PLAIN})
+    @Operation(summary = "Retrieves projects count based on district.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.BAD_REQUEST_CODE, description = EmpowerConstants.BAD_REQUEST_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.UNAUTHORIZED_CODE, description = EmpowerConstants.UNAUTHORIZED_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.FORBIDDEN_CODE, description = EmpowerConstants.FORBIDDEN_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
+    })
+    public ResponseEntity<List<DistrictDto>> getProjectsCountByDistrict() {
+        try {
+            List<DistrictDto>  districts = projectService.getProjectsWithDistricts();
+            log.debug("Projects Page: {}", districts);
+            return ResponseEntity.ok(districts);
         }catch (Exception e){
             log.error("Error while fetching projects", e);
             return ResponseEntity.internalServerError().build();

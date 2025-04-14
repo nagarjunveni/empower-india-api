@@ -9,13 +9,13 @@ import com.andhraempower.events.StatusChangePublisher;
 import com.andhraempower.repository.ProjectRepository;
 import com.andhraempower.repository.VillageProjectDonarRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -362,5 +362,9 @@ public class ProjectService {
         if (rowsUpdated == 0) {
             throw new EntityNotFoundException("Project not found with ID: " + projectId);
         }
+    }
+
+    public List<DistrictDto> getProjectsWithDistricts() {
+        return projectRepository.getProjectsWithDistricts();
     }
 }
