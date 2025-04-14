@@ -151,10 +151,9 @@ public interface ProjectRepository extends JpaRepository<VillageProject, Long> {
             "FROM DistrictLookup dl "+
             "LEFT join MandalLookup ml on dl.id = ml.districtId "+
             "LEFT join VillageLookup vl on ml.id =vl.mandalId " +
-            "LEFT join VillageProject vp on vl.id = vp.village.id " +
+            "LEFT join VillageProject vp on vl.id = vp.village.id and vp.isDeleted = 0" +
             "LEFT join VillageDemographics vd on vl.id = vd.id " +
-            "WHERE vp.isDeleted = 0 " +
-            "AND (:districtId IS NULL OR dl.id = :districtId) " +
+            "WHERE (:districtId IS NULL OR dl.id = :districtId) " +
             "AND (:mandalId IS NULL OR ml.id = :mandalId) " +
             "AND (:projectTypeId IS NULL OR vp.projectTypeLookup.id = :projectTypeId) " +
             "AND (:statusCode IS NULL OR vp.statusCode  = :statusCode ) " +
@@ -175,10 +174,9 @@ public interface ProjectRepository extends JpaRepository<VillageProject, Long> {
             "FROM DistrictLookup dl "+
             "LEFT join MandalLookup ml on dl.id = ml.districtId "+
             "LEFT join VillageLookup vl on ml.id =vl.mandalId " +
-            "join VillageProject vp on vl.id = vp.village.id " +
+            "join VillageProject vp on vl.id = vp.village.id and vp.isDeleted = 0" +
             "LEFT join VillageDemographics vd on vl.id = vd.id " +
-            "WHERE vp.isDeleted = 0" +
-            "AND (:districtId IS NULL OR dl.id = :districtId) " +
+            "WHERE (:districtId IS NULL OR dl.id = :districtId) " +
             "AND (:mandalId IS NULL OR ml.id = :mandalId) " +
             "AND (:projectTypeId IS NULL OR vp.projectTypeLookup.id = :projectTypeId) " +
             "AND (:statusCode IS NULL OR vp.statusCode  = :statusCode ) " +
@@ -205,7 +203,7 @@ public interface ProjectRepository extends JpaRepository<VillageProject, Long> {
             " FROM DistrictLookup dl " +
             " left join MandalLookup ml on dl.id = ml.districtId " +
             " left join VillageLookup vl on ml.id =vl.mandalId " +
-            " left join VillageProject vp on vl.id = vp.village.id " +
+            " left join VillageProject vp on vl.id = vp.village.id and vp.isDeleted = 0" +
             " group by dl.id order by dl.id"
     )
     List<DistrictDto> getProjectsWithDistricts();
