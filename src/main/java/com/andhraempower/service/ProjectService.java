@@ -336,4 +336,8 @@ public class ProjectService {
 
         return allProjects;
     }
+
+    public List<DistrictDto> getProjectsWithDistricts() {
+        return projectRepository.getProjectsWithDistricts();
+    }
 }

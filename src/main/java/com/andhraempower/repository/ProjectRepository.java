@@ -1,5 +1,6 @@
 package com.andhraempower.repository;
 
+import com.andhraempower.dto.DistrictDto;
 import com.andhraempower.dto.DistrictMandalVillageProjectInfoDto;
 import com.andhraempower.dto.ProjectResponseDto;
 import com.andhraempower.entity.VillageProject;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -182,4 +184,17 @@ public interface ProjectRepository extends JpaRepository<VillageProject, Long> {
             "OR COUNT(CASE WHEN vp.statusCode like upper('%wfd%') THEN 1 END) > 0 ")
     Page<DistrictMandalVillageProjectInfoDto> getDistrictMandalVillageProjects(@Param("districtId") Long districtId, @Param("mandalId") Long mandalId
             , @Param("projectTypeId") Long projectTypeId, @Param("statusCode") String statusCode, Pageable pageable);
+
+
+    @Query("SELECT new com.andhraempower.dto.DistrictDto(" +
+            "dl.name," +
+            "COUNT(vp.id) , " +
+            " COUNT(CASE WHEN vp.statusCode like upper('%completed%') THEN 1 END) ) " +
+            " FROM DistrictLookup dl " +
+            " left join MandalLookup ml on dl.id = ml.districtId " +
+            " left join VillageLookup vl on ml.id =vl.mandalId " +
+            " left join VillageProject vp on vl.id = vp.village.id " +
+            " group by dl.id order by dl.id"
+    )
+    List<DistrictDto> getProjectsWithDistricts();
 }
