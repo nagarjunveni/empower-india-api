@@ -29,10 +29,10 @@ public class VendorsService {
                  vendorsRepository.save(vendors);
                 return ResponseEntity.ok("New Vendor saved successfully!");
             }else{
-                return ResponseEntity.ok("projectId are not avilable!");
+                return ResponseEntity.ok("projectId are not available!");
             }
         }
-        return ResponseEntity.ok("Vendor details/projectId are not avilable!");
+        return ResponseEntity.ok("Vendor details/projectId are not available!");
     }
 
     public List<Vendors> getVendors(Long projectId) {

@@ -94,7 +94,7 @@ public class VillageProject {
     @Column(name = "image", columnDefinition = "LONGBLOB")
     private byte[] projectImage;
 
-    @Column(name = "is_deleted")
+    @Column(name = "is_deleted", nullable = false)
     private Integer isDeleted;
 
     @OneToMany
