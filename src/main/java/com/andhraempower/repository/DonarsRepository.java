@@ -1,5 +1,6 @@
 package com.andhraempower.repository;
 import com.andhraempower.dto.DonarDto;
+import com.andhraempower.dto.DashBoardStatisticsDTO;
 import com.andhraempower.dto.ProjectInfoDto;
 import com.andhraempower.entity.Donar;
 import java.util.List;
@@ -80,5 +81,16 @@ public interface DonarsRepository extends JpaRepository<Donar, Integer> {
           + "(d.phoneNumber LIKE CONCAT('%', :searchTerm, '%')) OR "
           + "(d.email LIKE CONCAT('%', :searchTerm, '%'))")
   List<Donar> searchDonors(@Param("searchTerm") String searchTerm);
+
+
+
+  @Query("SELECT new com.andhraempower.dto.DashBoardStatisticsDTO(" +
+          "COUNT(d.id), SUM(vpd.amount), COUNT(vp.id), SUM(vd.totalPopulation)) " +
+          "FROM Donar d " +
+          "LEFT JOIN VillageProjectDonar vpd ON vpd.donar.id = d.id " +
+          "LEFT JOIN VillageProject vp ON vp.id = vpd.villageProjectId AND vp.isDeleted = 0 " +
+          "LEFT JOIN VillageDemographics vd ON vp.village.id = vd.villageId")
+  DashBoardStatisticsDTO getDashBoardCounts();
+
 
 }
