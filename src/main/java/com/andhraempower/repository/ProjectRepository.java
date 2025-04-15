@@ -199,12 +199,13 @@ public interface ProjectRepository extends JpaRepository<VillageProject, Long> {
     @Query("SELECT new com.andhraempower.dto.DistrictDto(" +
             "dl.name," +
             "COUNT(vp.id) , " +
-            " COUNT(CASE WHEN vp.statusCode like upper('%completed%') THEN 1 END) ) " +
+            " COUNT(CASE WHEN vp.statusCode like upper('%completed%') THEN 1 END),  " +
+            " COUNT(CASE WHEN vp.statusCode like upper('%wip%') THEN 1 END) , " +
+            " COUNT(CASE WHEN vp.statusCode like upper('%wfd%') THEN 1 END) ) " +
             " FROM DistrictLookup dl " +
             " left join MandalLookup ml on dl.id = ml.districtId " +
             " left join VillageLookup vl on ml.id =vl.mandalId " +
             " left join VillageProject vp on vl.id = vp.village.id and vp.isDeleted = 0 " +
-            " group by dl.id order by dl.id"
-    )
+            " group by dl.id order by dl.id")
     List<DistrictDto> getProjectsWithDistricts();
 }
