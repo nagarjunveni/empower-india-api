@@ -36,7 +36,7 @@ public class SecurityConfiguration {
 //                    registry.requestMatchers("/home", "/register/**", "/jwt/**").permitAll();
 //                    registry.requestMatchers("/admin/**").hasRole("ADMIN");
 //                    registry.requestMatchers("/user/**").hasRole("USER");
-                    registry.requestMatchers("/**").permitAll();
+                    registry.requestMatchers(getEndPointsForAllUsers()).permitAll();
                     registry.anyRequest().authenticated();
                 })
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
@@ -65,5 +65,27 @@ public class SecurityConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    private String[] getEndPointsForAllUsers(){
+        return new String[]{
+                "/api/v1/login",
+                "/api/v1/committee/**",
+                "/api/v1/contact-us/**",
+                "/api/v1/dash-board/**",
+                "/api/v1/finance/**",
+                "/api/v1/gallery-images/**",
+                "/api/v1/lookup/**",
+                "/api/v1/bank/**",
+                //"/api/v1/project/**",
+                //"/api/v1/project/status/**",
+                "/api/v1/status/**",
+                "/api/v1/projectType/**",
+                "/api/v1/roles/**",
+                //"/Sponsors",
+                "/api/v1/users/**",
+                "/api/v1/vendors/**",
+                "/api/v1/village/**"
+        };
     }
 }

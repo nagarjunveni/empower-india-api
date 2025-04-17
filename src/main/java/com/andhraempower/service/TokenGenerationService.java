@@ -17,11 +17,13 @@ import java.util.Map;
 public class TokenGenerationService {
 
     private static final String SECRET = "E74A8CF906062EE04C22976A99C129966767B1E884F6A7DED98E6098BEA435F3918AD241C6682390B504FBAC4F5353C094D835982D1F28C3C27CB4F260AA317D";
+    private static final String ISS_URL = "https://www.empowerandhra.org/";
     private static final long VALIDITY_IN_MINUTES = 15;
 
     public String generateToken(UserDetails userDetails) {
         Map<String, String> claims = new HashMap<>();
-        claims.put("iss", "https:example.com");
+
+        claims.put("iss", ISS_URL);
         return Jwts.builder()
                 .claims(claims)
                 .subject(userDetails.getUsername())
