@@ -20,4 +20,5 @@ public interface VillageProjectDonarRepository extends JpaRepository<VillageProj
     @Query("DELETE FROM VillageProjectDonar vpd where vpd.villageProjectId = :projectId AND vpd.donar.id = :donarId")
     void deleteByIdAndVillageProjectId(@Param("donarId") Long id, @Param("projectId") Long villageProjectId);
 
+    VillageProjectDonar findByDonarId(Long id);
 }

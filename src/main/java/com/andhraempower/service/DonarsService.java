@@ -79,15 +79,21 @@ public class DonarsService {
     }
 
     public void associateDonarToProject(Long projectId, Donar donar, Double amount, String modeOfPayment, String memoryOf){
+
+        VillageProjectDonar villageProjectDonar = villageProjectDonarRepository.findByDonarId(donar.getId());
+
+        if(villageProjectDonar == null){
+            villageProjectDonar = new VillageProjectDonar();
+        }
+        VillageProjectDonar finalVillageProjectDonar = villageProjectDonar;
         Optional.ofNullable(projectId).ifPresent(id -> {
-            VillageProjectDonar villageProjectDonar = new VillageProjectDonar();
-            villageProjectDonar.setDonar(donar);
-            villageProjectDonar.setVillageProjectId(projectId);
-            villageProjectDonar.setAmount(amount);
-            villageProjectDonar.setModeOfPayment(modeOfPayment);
-            villageProjectDonar.setMemoryOf(memoryOf);
-            villageProjectDonar.setCreatedBy(USER_ADMIN);
-            villageProjectDonarRepository.save(villageProjectDonar);
+            finalVillageProjectDonar.setDonar(donar);
+            finalVillageProjectDonar.setVillageProjectId(projectId);
+            finalVillageProjectDonar.setAmount(amount);
+            finalVillageProjectDonar.setModeOfPayment(modeOfPayment);
+            finalVillageProjectDonar.setMemoryOf(memoryOf);
+            finalVillageProjectDonar.setCreatedBy(USER_ADMIN);
+            villageProjectDonarRepository.save(finalVillageProjectDonar);
             statusChangePublisher.publishStatusChange(new StatusChangeEvent(projectId, SPONSOR_ADDED, USER_ADMIN, LocalDateTime.now()));
         });
 
@@ -101,7 +107,7 @@ public class DonarsService {
                     List<VillageProjectDonar> byVillageProjectId = villageProjectDonarRepository.getByVillageProjectId(id);
                     if(byVillageProjectId != null && !byVillageProjectId.isEmpty()){
                         return byVillageProjectId.stream().map(villageProjectDonar -> new DonarDto(
-                                villageProjectDonar.getId(),villageProjectDonar.getDonar().getImage(),villageProjectDonar.getDonar().getFirstName(),villageProjectDonar.getDonar().getLastName(),
+                                villageProjectDonar.getDonar().getId(),villageProjectDonar.getDonar().getImage(),villageProjectDonar.getDonar().getFirstName(),villageProjectDonar.getDonar().getLastName(),
                                 villageProjectDonar.getDonar().getPhoneNumber(),villageProjectDonar.getDonar().getEmail(),villageProjectDonar.getDonar().getDescription(),
                                 villageProjectDonar.getDonar().getAddress(),villageProjectDonar.getAmount(),villageProjectDonar.getMemoryOf(),villageProjectDonar.getModeOfPayment()
                         )).collect(Collectors.toList());

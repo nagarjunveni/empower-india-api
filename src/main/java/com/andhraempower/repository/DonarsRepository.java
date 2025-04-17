@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DonarsRepository extends JpaRepository<Donar, Integer> {
+public interface DonarsRepository extends JpaRepository<Donar, Long> {
 
   @Query("SELECT new com.andhraempower.dto.DonarDto( " +
           "d.id, d.image, d.firstName, d.lastName, d.phoneNumber, d.email, d.description, d.address, vl.id, vl.name, ml.id, ml.name, dl.id, dl.name, SUM(vpl.amount), " +
