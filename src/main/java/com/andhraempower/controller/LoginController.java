@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,7 +38,12 @@ public class LoginController {
             @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
     })
     public ResponseEntity<UserResponseDto> login(HttpServletRequest request, @RequestBody LoginRequestDto loginRequestDto) {
-        return ResponseEntity.ok(userService.loadUserWithRoles(loginRequestDto.getUserName(), getPassword(request, loginRequestDto)));
+        UserResponseDto resp = userService.loadUserWithRoles(loginRequestDto.getUserName(), getPassword(request, loginRequestDto));
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.AUTHORIZATION,"Bearer "+resp.getJwtToken())
+                .body(resp);
+
     }
 
     @PostMapping("/logout")

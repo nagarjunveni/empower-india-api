@@ -37,6 +37,7 @@ public class SecurityConfiguration {
 //                    registry.requestMatchers("/admin/**").hasRole("ADMIN");
 //                    registry.requestMatchers("/user/**").hasRole("USER");
                     registry.requestMatchers(getEndPointsForAllUsers()).permitAll();
+                    registry.requestMatchers("/api/v1/project/status/**").hasRole("District Volunteer");
                     registry.anyRequest().authenticated();
                 })
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
