@@ -1,7 +1,7 @@
 package com.andhraempower.config;
 
 import com.andhraempower.service.TokenGenerationService;
-import com.andhraempower.service.security.MyUserDetailsService;
+import com.andhraempower.service.security.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private TokenGenerationService tokenGenService;
 
     @Autowired
-    private MyUserDetailsService userDetailsService;
+    private CustomUserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
