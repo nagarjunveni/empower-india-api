@@ -1,5 +1,6 @@
 package com.andhraempower.config;
 
+import com.andhraempower.exception.TokenExpiredException;
 import com.andhraempower.service.TokenGenerationService;
 import com.andhraempower.service.security.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
@@ -46,6 +47,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
                 token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(token);
+            } else {
+                throw new TokenExpiredException("Token was expired. Please login again.");
             }
         }
         filterChain.doFilter(request, response);

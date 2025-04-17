@@ -29,6 +29,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<String> handleTokenExpiredException(TokenExpiredException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGlobalException(Exception ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

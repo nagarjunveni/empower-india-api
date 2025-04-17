@@ -10,8 +10,8 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,7 +40,8 @@ public class SecurityConfiguration {
                     registry.requestMatchers("/api/v1/project/status/**").hasRole("District Volunteer");
                     registry.anyRequest().authenticated();
                 })
-                .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -78,15 +79,20 @@ public class SecurityConfiguration {
                 "/api/v1/gallery-images/**",
                 "/api/v1/lookup/**",
                 "/api/v1/bank/**",
-                //"/api/v1/project/**",
-                //"/api/v1/project/status/**",
+                "/api/v1/project/**",
+                "/api/v1/project/status/**",
                 "/api/v1/status/**",
                 "/api/v1/projectType/**",
                 "/api/v1/roles/**",
-                //"/Sponsors",
+                "/Sponsors",
                 "/api/v1/users/**",
                 "/api/v1/vendors/**",
-                "/api/v1/village/**"
+                "/api/v1/village/**",
+                "/v3/api-docs/**",
+                "/swagger-ui/**",
+                "/swagger-ui.html",
+                "/swagger-resources/**",
+                "/webjars/**"
         };
     }
 }
