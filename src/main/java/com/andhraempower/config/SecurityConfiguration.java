@@ -33,11 +33,8 @@ public class SecurityConfiguration {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
-//                    registry.requestMatchers("/home", "/register/**", "/jwt/**").permitAll();
-//                    registry.requestMatchers("/admin/**").hasRole("ADMIN");
-//                    registry.requestMatchers("/user/**").hasRole("USER");
                     registry.requestMatchers(getEndPointsForAllUsers()).permitAll();
-                    registry.requestMatchers("/api/v1/project/status/**").hasRole("District Volunteer");
+                    //registry.requestMatchers("/api/v1/project/status/**").hasRole("District Volunteer");
                     registry.anyRequest().authenticated();
                 })
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
@@ -78,15 +75,16 @@ public class SecurityConfiguration {
                 "/api/v1/gallery-images/**",
                 "/api/v1/lookup/**",
                 "/api/v1/bank/**",
-                //"/api/v1/project/**",
-                //"/api/v1/project/status/**",
+                "/api/v1/project/**",
+                "/api/v1/project/status/**",
                 "/api/v1/status/**",
                 "/api/v1/projectType/**",
                 "/api/v1/roles/**",
-                //"/Sponsors",
+                "/Sponsors",
                 "/api/v1/users/**",
                 "/api/v1/vendors/**",
-                "/api/v1/village/**"
+                "/api/v1/village/**",
+                "/api/v1/donars/**"
         };
     }
 }
