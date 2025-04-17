@@ -35,6 +35,8 @@ public class UserResponseDto {
 
     private String userName;
 
+    private String jwtToken;
+
     public UserResponseDto(User user) {
         this.id = user.getId();
         this.firstName = user.getFirstName();
