@@ -7,11 +7,15 @@ import com.andhraempower.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 @CrossOrigin
 @RestController
@@ -33,8 +37,13 @@ public class LoginController {
             @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
             @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
     })
-    public ResponseEntity<UserResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
-        return ResponseEntity.ok(userService.loadUserWithRoles(loginRequestDto));
+    public ResponseEntity<UserResponseDto> login(HttpServletRequest request, @RequestBody LoginRequestDto loginRequestDto) {
+        UserResponseDto resp = userService.loadUserWithRoles(loginRequestDto.getUserName(), getPassword(request, loginRequestDto));
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.AUTHORIZATION,"Bearer "+resp.getJwtToken())
+                .body(resp);
+
     }
 
     @PostMapping("/logout")
@@ -49,5 +58,13 @@ public class LoginController {
     })
     public ResponseEntity<String> logout() {
         return ResponseEntity.ok("Successfully logged out");
+    }
+
+    private static String getPassword(HttpServletRequest request, LoginRequestDto loginRequestDto) {
+        String password = loginRequestDto.getPassword();
+        if (Objects.isNull(password) || password.isEmpty()) {
+            password = request.getHeader("password");
+        }
+        return password;
     }
 }

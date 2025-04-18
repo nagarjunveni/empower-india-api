@@ -1,6 +1,5 @@
 package com.andhraempower.service;
 
-import com.andhraempower.dto.LoginRequestDto;
 import com.andhraempower.dto.UserRequestDto;
 import com.andhraempower.dto.UserResponseDto;
 import com.andhraempower.entity.Role;
@@ -11,14 +10,18 @@ import com.andhraempower.exception.UserNotFoundException;
 import com.andhraempower.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,26 +29,37 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private UserDetailsService userDetailsService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private TokenGenerationService tokenGenService;
 
-    public UserResponseDto loadUserWithRoles(LoginRequestDto loginRequestDto) {
-        Optional<User> userOptional = userRepository.findByUserName(loginRequestDto.getUserName());
+    public UserResponseDto loadUserWithRoles(String userName, String password) {
+        Optional<User> userOptional = userRepository.findByUserName(userName);
 
-        if (!userOptional.isPresent()) {
-            throw new UserNotFoundException("User does not exist with username: " + loginRequestDto.getUserName());
+        if (userOptional.isEmpty()) {
+            throw new UserNotFoundException("User does not exist with username: " + userName);
+        }
+
+        Authentication authentication = getAuthentication(userName, password);
+        if (!authentication.isAuthenticated()) {
+            throw new UsernameNotFoundException("Invalid Credentials");
         }
 
         User user = userOptional.get();
-
-        if (!loginRequestDto.getPassword().equals(user.getPassword())) {
-            throw new InvalidCredentialsException("Invalid credentials for user: " + loginRequestDto.getUserName());
-        }
-        return new UserResponseDto(user);
+        String token = generateToken(user.getUserName());
+        UserResponseDto userResponseDto = new UserResponseDto(user);
+        userResponseDto.setJwtToken(token);
+        return userResponseDto;
     }
 
-    public User createUser(UserRequestDto userRequestDto, MultipartFile file) throws IOException {
+    public UserResponseDto createUser(UserRequestDto userRequestDto, MultipartFile file) throws IOException {
 
         if (userRepository.existsByUserName(userRequestDto.getUserName())) {
             throw new UserAlreadyExistsException("Username already exists. Please choose another one.");
@@ -66,7 +80,7 @@ public class UserService {
         user.setPhoneNumber(userRequestDto.getPhoneNumber());
         user.setEmail(userRequestDto.getEmail());
         user.setUserName(userRequestDto.getUserName());
-        user.setPassword(userRequestDto.getPassword());
+        user.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
         user.setAboutYourSelf(userRequestDto.getAboutYourSelf());
         if (!userRequestDto.getRoles().isEmpty()) {
             List<Role> roles = userRequestDto.getRoles().stream()
@@ -79,11 +93,18 @@ public class UserService {
         }
         user.setDistrictId(userRequestDto.getDistrictId());
         user.setIsEnabled(1);  //for active user
-        return userRepository.save(user);
+        User persistedUser = userRepository.save(user);
+        UserResponseDto userResponseDto = new UserResponseDto(persistedUser);
+        userResponseDto.setJwtToken(generateToken(user.getUserName()));
+        return userResponseDto;
+    }
+
+    private String generateToken(String userName) {
+        return tokenGenService.generateToken(userDetailsService.loadUserByUsername(userName));
     }
 
 
-    public User updateUser(UserRequestDto userRequestDto, MultipartFile file) throws IOException {
+    public UserResponseDto updateUser(UserRequestDto userRequestDto, MultipartFile file) throws IOException {
 
         Optional<User> optionalUser = userRepository.findById(userRequestDto.getId());
 
@@ -139,7 +160,10 @@ public class UserService {
             user.setProfilePhoto(file.getBytes());
         }
 
-        return userRepository.save(user);
+        User persistedUserObj = userRepository.save(user);
+        UserResponseDto userResponseDto = new UserResponseDto(persistedUserObj);
+        userResponseDto.setJwtToken(generateToken(user.getUserName()));
+        return userResponseDto;
     }
 
     public List<UserResponseDto> getAllUsers(String searchTerm, Long districtId, Long roleId) {
@@ -165,4 +189,15 @@ public class UserService {
         User user = userRepository.findByEmailOrPhoneNumber(emailOrPhone, emailOrPhone).orElseThrow(() -> new UserNotFoundException("User not found"));
         return new UserResponseDto(user);
     }
+
+    private Authentication getAuthentication(String userName, String password) {
+        Authentication authentication;
+        try {
+            authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName, password));
+        } catch (BadCredentialsException e) {
+            throw new InvalidCredentialsException(e.getMessage());
+        }
+        return authentication;
+    }
+
 }
