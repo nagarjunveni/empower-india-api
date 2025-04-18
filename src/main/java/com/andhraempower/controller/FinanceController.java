@@ -2,7 +2,6 @@ package com.andhraempower.controller;
 
 import com.andhraempower.constants.EmpowerConstants;
 import com.andhraempower.dto.VillageProjectExpenseResponse;
-import com.andhraempower.entity.CommitteeMembers;
 import com.andhraempower.entity.Finance;
 import com.andhraempower.service.FinanceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,8 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.io.IOException;
 
 @CrossOrigin
 @RestController
@@ -27,7 +27,7 @@ public class FinanceController {
     @Autowired
     private FinanceService financeService;
 
-    @PostMapping(value = "/addTransaction",produces = {EmpowerConstants.APPLICATION_JSON, EmpowerConstants.TEXT_PLAIN})
+    @PostMapping(value = "/addTransaction")
     @Operation(summary = "Adds new Transactions.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
@@ -37,7 +37,11 @@ public class FinanceController {
             @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
             @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
     })
-    public Finance addTransaction(@RequestBody Finance finance) {
+    public Finance addTransaction(@RequestPart("finance") Finance finance,
+                                  @RequestPart(value = "financeImage", required = false) MultipartFile multipartFile) throws IOException {
+        if(multipartFile != null && !multipartFile.isEmpty()) {
+            finance.setBillImage(multipartFile.getBytes());
+        }
         return financeService.addTransaction(finance);
     }
 
@@ -56,7 +60,7 @@ public class FinanceController {
         return financeService.getTransactionsForProject(projectId);
     }
 
-    @PutMapping(value = "/update",produces = {EmpowerConstants.APPLICATION_JSON, EmpowerConstants.TEXT_PLAIN})
+    @PutMapping("/{id}")
     @Operation(summary = "Update Transactions.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
@@ -66,18 +70,13 @@ public class FinanceController {
             @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
             @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
     })
-    public ResponseEntity<Finance> updateTransaction(@RequestBody Finance finance) {
-        log.debug("Updating Transaction {} ", finance);
-        try {
-            if(finance.getId() == null ){
-                return ResponseEntity.badRequest().build();
-            }
-            Finance finance1 = financeService.addTransaction(finance);
-            return ResponseEntity.ok().body(finance1);
-        }catch (Exception e){
-            log.error("Exception while updating transactions", e);
-            return ResponseEntity.internalServerError().build();
-        }
+    public ResponseEntity<Finance> updateFinance(
+            @PathVariable Integer id,
+            @RequestPart("finance") Finance finance,
+            @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+
+        Finance updatedFinance = financeService.updateFinanceById(id, finance, file);
+        return ResponseEntity.ok(updatedFinance);
     }
 
     @DeleteMapping(value = "/{transactionId}/{projectId}",produces = {EmpowerConstants.APPLICATION_JSON, EmpowerConstants.TEXT_PLAIN})

@@ -8,6 +8,7 @@ import com.andhraempower.exception.InvalidCredentialsException;
 import com.andhraempower.exception.UserAlreadyExistsException;
 import com.andhraempower.exception.UserNotFoundException;
 import com.andhraempower.repository.RolesRepository;
+import com.andhraempower.repository.RolesRepository;
 import com.andhraempower.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +60,7 @@ public class UserService {
         }
 
         User user = userOptional.get();
-        String token = tokenGenService.generateToken(userDetailsService.loadUserByUsername(user.getUserName()));
+        String token = generateToken(user.getUserName());
         UserResponseDto userResponseDto = new UserResponseDto(user);
         userResponseDto.setJwtToken(token);
         return userResponseDto;
@@ -73,6 +74,10 @@ public class UserService {
         user.setIsEnabled(1);
 
         return userRepository.save(user);
+    }
+
+    private String generateToken(String userName) {
+        return tokenGenService.generateToken(userDetailsService.loadUserByUsername(userName));
     }
 
 

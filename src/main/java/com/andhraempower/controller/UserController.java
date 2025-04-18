@@ -43,14 +43,13 @@ public class UserController {
             @RequestPart("user") UserRequestDto userRequestDto,
             @RequestPart(value = "profilePhoto", required = false) MultipartFile file) throws IOException {
 
-        User user;
+        UserResponseDto user;
         if (userRequestDto.getId() != null) {
             user = userService.updateUser(userRequestDto, file);
         } else {
             user = userService.createUser(userRequestDto, file);
         }
-        UserResponseDto response = new UserResponseDto(user);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(user);
     }
 
 

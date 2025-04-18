@@ -4,13 +4,15 @@ import com.andhraempower.entity.Finance;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface FinanceRepository extends JpaRepository<Finance, Long> {
+public interface FinanceRepository extends JpaRepository<Finance, Integer> {
+
+
     List<Finance> findByVillageProjectId(Long projectId);
 
-
-
+    Optional<Finance> findById(Long id);
 
     void deleteByIdAndVillageProjectId(Long transactionId, Long projectId);
 }
