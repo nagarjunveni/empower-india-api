@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "village_project_expenses")
-public class Finance {
+public class Finance  extends Audit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,18 +36,6 @@ public class Finance {
     @Column(name = "committee_id")
     private Integer committeeId;
 
-    @Column(name = "created_date", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime createdDate;
-
-    @Column(name = "created_by")
-    private String createdBy;
-
-    @Column(name = "last_updated_date", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
-    private LocalDateTime lastUpdatedDate;
-
-    @Column(name = "last_updated_by")
-    private String lastUpdatedBy;
-
     @Column(name = "paid_to")
     private String paidTo;
 
@@ -65,4 +53,8 @@ public class Finance {
 
     @Column(name = "approved_by")
     private String approvedBy;
+
+    @Lob
+    @Column(name = "bill_image", columnDefinition = "LONGBLOB")
+    private byte[] billImage;
 }
