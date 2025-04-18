@@ -41,7 +41,8 @@ public class SecurityConfiguration {
 
                 .authorizeHttpRequests(registry -> {
                     registry.requestMatchers(getEndPointsForAllUsers()).permitAll();
-                    //registry.requestMatchers("/api/v1/project/status/**").hasRole("District Volunteer");
+                    //registry.requestMatchers("/api/v1/project/status/**").hasRole("ADMIN");
+                    //registry.requestMatchers("/api/v1/project/status/**").hasRole("ADMIN");
                     registry.anyRequest().authenticated();
                 })
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
