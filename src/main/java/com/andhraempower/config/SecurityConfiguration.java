@@ -1,6 +1,5 @@
 package com.andhraempower.config;
 
-import com.andhraempower.service.security.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +27,7 @@ import java.util.List;
 public class SecurityConfiguration {
 
     @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private UserDetailsService userDetailsService;
 
     @Autowired
     private JwtAuthenticationFilter filter;
@@ -46,6 +45,7 @@ public class SecurityConfiguration {
                     registry.anyRequest().authenticated();
                 })
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -73,7 +73,7 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    private String[] getEndPointsForAllUsers(){
+    public static String[] getEndPointsForAllUsers(){
         return new String[]{
                 "/api/v1/login",
                 "/api/v1/committee/**",

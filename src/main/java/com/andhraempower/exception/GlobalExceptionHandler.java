@@ -29,9 +29,20 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<String> handleTokenExpiredException(TokenExpiredException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+
     @ExceptionHandler(RequiredFieldMissingException.class)
     public ResponseEntity<String> handleRequiredField(RequiredFieldMissingException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MissingBearerTokenException.class)
+    public ResponseEntity<String> handleMissingBearerTokenException(MissingBearerTokenException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(Exception.class)
