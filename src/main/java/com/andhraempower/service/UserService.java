@@ -1,5 +1,7 @@
 package com.andhraempower.service;
 
+import com.andhraempower.config.CustomUserDetails;
+import com.andhraempower.config.SecurityCustomUserDetailsService;
 import com.andhraempower.dto.UserRequestDto;
 import com.andhraempower.dto.UserResponseDto;
 import com.andhraempower.entity.Role;
@@ -8,7 +10,6 @@ import com.andhraempower.exception.InvalidCredentialsException;
 import com.andhraempower.exception.UserAlreadyExistsException;
 import com.andhraempower.exception.UserNotFoundException;
 import com.andhraempower.repository.RolesRepository;
-import com.andhraempower.repository.RolesRepository;
 import com.andhraempower.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,14 +35,19 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private EmailService emailService;
+
     @Autowired
-    private UserDetailsService userDetailsService;
+    private SecurityCustomUserDetailsService securityCustomUserDetailsService;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     @Autowired
     private AuthenticationManager authenticationManager;
+
     @Autowired
     private TokenGenerationService tokenGenService;
 
@@ -48,46 +55,50 @@ public class UserService {
     private RolesRepository rolesRepository;
 
     public UserResponseDto loadUserWithRoles(String userName, String password) {
-        Optional<User> userOptional = userRepository.findByUserName(userName);
-
-        if (userOptional.isEmpty()) {
-            throw new UserNotFoundException("User does not exist with username: " + userName);
-        }
 
         Authentication authentication = getAuthentication(userName, password);
+
         if (!authentication.isAuthenticated()) {
             throw new UsernameNotFoundException("Invalid Credentials");
         }
 
-        User user = userOptional.get();
-        String token = generateToken(user.getUserName());
-        UserResponseDto userResponseDto = new UserResponseDto(user);
-        userResponseDto.setJwtToken(token);
+        CustomUserDetails userDetails = (CustomUserDetails) securityCustomUserDetailsService.loadUserByUsername(userName);
+
+        String jwtToken = tokenGenService.generateToken(userDetails);
+
+        UserResponseDto userResponseDto = new UserResponseDto(userRepository.findByUserName(userName).get());
+        userResponseDto.setJwtToken(jwtToken);
         return userResponseDto;
     }
 
-    public User createUser(UserRequestDto dto, MultipartFile file) throws IOException {
+    public UserResponseDto createUser(UserRequestDto dto, MultipartFile file) throws IOException {
         validateUniqueFields(dto.getUserName(), dto.getEmail(), dto.getPhoneNumber());
 
         User user = new User();
         populateUserFields(user, dto, file);
         user.setIsEnabled(1);
 
-        return userRepository.save(user);
+        User persistedUser = userRepository.save(user);
+        UserResponseDto userResponseDto = new UserResponseDto(persistedUser);
+        userResponseDto.setJwtToken(generateToken(securityCustomUserDetailsService.loadUserByUsername(persistedUser.getUserName())));
+        return userResponseDto;
     }
 
-    private String generateToken(String userName) {
-        return tokenGenService.generateToken(userDetailsService.loadUserByUsername(userName));
+    private String generateToken(UserDetails userDetails) {
+        return tokenGenService.generateToken(userDetails);
     }
 
 
 
-    public User updateUser(UserRequestDto dto, MultipartFile file) throws IOException {
+    public UserResponseDto updateUser(UserRequestDto dto, MultipartFile file) throws IOException {
         User user = userRepository.findById(dto.getId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + dto.getId()));
 
         populateUserFields(user, dto, file);
-        return userRepository.save(user);
+        User persistedUserObj = userRepository.save(user);
+        UserResponseDto userResponseDto = new UserResponseDto(persistedUserObj);
+        userResponseDto.setJwtToken(generateToken(securityCustomUserDetailsService.loadUserByUsername(persistedUserObj.getUserName())));
+        return userResponseDto;
     }
 
     private void populateUserFields(User user, UserRequestDto dto, MultipartFile file) throws IOException {

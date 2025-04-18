@@ -1,5 +1,7 @@
 package com.andhraempower.constants;
 
+import java.util.List;
+
 public class EmpowerConstants {
 
     public static final String APPLICATION_JSON = "application/json";
@@ -20,5 +22,31 @@ public class EmpowerConstants {
     public static final String USER_ADMIN = "Admin";
 
     public static final String PROJECT_FLOW = "PROJECT_FLOW";
+
+    public static final List<String> ENDPOINTS_FOR_ALL_USERS = List.of("/api/v1/login",
+            "/api/v1/committee/**",
+            "/api/v1/contact-us/**",
+            "/api/v1/dash-board/**",
+            "/api/v1/finance/**",
+            "/api/v1/gallery-images/**",
+            "/api/v1/lookup/**",
+            "/api/v1/bank/**",
+            "/api/v1/project/**",
+            "/api/v1/project/status/**",
+            "/api/v1/status/**",
+            "/api/v1/projectType/**",
+            "/api/v1/roles/**",
+            "/Sponsors",
+            "/api/v1/users/**",
+            "/api/v1/vendors/**",
+            "/api/v1/village/**",
+            "/api/v1/donars/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/swagger-resources/**",
+            "/webjars/**"
+    );
+
 
 }
