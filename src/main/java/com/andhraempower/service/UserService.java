@@ -53,13 +53,13 @@ public class UserService {
         }
 
         User user = userOptional.get();
-        String token = tokenGenService.generateToken(userDetailsService.loadUserByUsername(user.getUserName()));
+        String token = generateToken(user.getUserName());
         UserResponseDto userResponseDto = new UserResponseDto(user);
         userResponseDto.setJwtToken(token);
         return userResponseDto;
     }
 
-    public User createUser(UserRequestDto userRequestDto, MultipartFile file) throws IOException {
+    public UserResponseDto createUser(UserRequestDto userRequestDto, MultipartFile file) throws IOException {
 
         if (userRepository.existsByUserName(userRequestDto.getUserName())) {
             throw new UserAlreadyExistsException("Username already exists. Please choose another one.");
@@ -93,11 +93,18 @@ public class UserService {
         }
         user.setDistrictId(userRequestDto.getDistrictId());
         user.setIsEnabled(1);  //for active user
-        return userRepository.save(user);
+        User persistedUser = userRepository.save(user);
+        UserResponseDto userResponseDto = new UserResponseDto(persistedUser);
+        userResponseDto.setJwtToken(generateToken(user.getUserName()));
+        return userResponseDto;
+    }
+
+    private String generateToken(String userName) {
+        return tokenGenService.generateToken(userDetailsService.loadUserByUsername(userName));
     }
 
 
-    public User updateUser(UserRequestDto userRequestDto, MultipartFile file) throws IOException {
+    public UserResponseDto updateUser(UserRequestDto userRequestDto, MultipartFile file) throws IOException {
 
         Optional<User> optionalUser = userRepository.findById(userRequestDto.getId());
 
@@ -153,7 +160,10 @@ public class UserService {
             user.setProfilePhoto(file.getBytes());
         }
 
-        return userRepository.save(user);
+        User persistedUserObj = userRepository.save(user);
+        UserResponseDto userResponseDto = new UserResponseDto(persistedUserObj);
+        userResponseDto.setJwtToken(generateToken(user.getUserName()));
+        return userResponseDto;
     }
 
     public List<UserResponseDto> getAllUsers(String searchTerm, Long districtId, Long roleId) {
