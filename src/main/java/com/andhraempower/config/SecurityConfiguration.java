@@ -35,13 +35,9 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
-
                 .authorizeHttpRequests(registry -> {
                     registry.requestMatchers(getEndPointsForAllUsers()).permitAll();
-                    //registry.requestMatchers("/api/v1/project/status/**").hasRole("District Volunteer");
                     registry.anyRequest().authenticated();
                 })
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -64,7 +60,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(){
+    public AuthenticationManager authenticationManager() {
         return new ProviderManager(authenticationProvider());
     }
 

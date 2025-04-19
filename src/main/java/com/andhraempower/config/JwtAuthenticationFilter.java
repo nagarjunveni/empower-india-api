@@ -17,7 +17,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 @Configuration
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -35,12 +34,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String authHeader = request.getHeader("Authorization");
 
-        if (method.equals("GET") || isPublicEndpoint(path)) {
+        if (List.of("GET", "OPTIONS").contains(method)  || isPublicEndpoint(path)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        if (Objects.equals("POST,PUT,DELETE", method) || authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (List.of("POST", "PUT", "DELETE").contains(method) && !hasBearerToken(authHeader)) {
             throw new MissingBearerTokenException("Bearer token is required");
         }
         String jwt = authHeader.substring(7);
@@ -58,6 +57,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
 
+    }
+
+    private static boolean hasBearerToken(String authHeader) {
+        return authHeader != null && authHeader.startsWith("Bearer ");
     }
 
     private boolean isPublicEndpoint(String path) {
