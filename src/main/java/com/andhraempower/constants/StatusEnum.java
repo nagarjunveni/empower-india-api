@@ -5,7 +5,7 @@ public enum StatusEnum {
     APPROVED("Approved"),
     REJECTED("Rejected"),
     WIP("Work in Progress"),
-    WFD("Waiting For Sponsor"),
+    WFS("Waiting For Sponsor"),
     COMPLETED("Completed"),
     OPEN("New"), // Open is temporary to support existing data
     DRAFT("Draft"),

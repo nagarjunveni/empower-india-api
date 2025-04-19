@@ -8,6 +8,7 @@ import com.andhraempower.entity.Role;
 import com.andhraempower.entity.User;
 import com.andhraempower.exception.InvalidCredentialsException;
 import com.andhraempower.exception.UserAlreadyExistsException;
+import com.andhraempower.exception.UserInActiveException;
 import com.andhraempower.exception.UserNotFoundException;
 import com.andhraempower.repository.RolesRepository;
 import com.andhraempower.repository.UserRepository;
@@ -150,15 +151,24 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void findByEmailOrPhone(String emailOrPhone) {
-        User user = userRepository.findByEmailOrPhoneNumber(emailOrPhone, emailOrPhone).orElseThrow(() -> new UserNotFoundException("User not found"));
-        String token = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 10);
-        user.setPassword(token);
-        emailService.sendEmail(user);
+    public void findByEmailOrPhone(String userNameOrEmailOrPhone) {
+        User user = userRepository.findByEmailOrPhoneNumberOrUserName(userNameOrEmailOrPhone, userNameOrEmailOrPhone,userNameOrEmailOrPhone)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        if(Objects.nonNull(user) && user.getIsEnabled().equals(0)) {
+            throw  new UserInActiveException("User "+userNameOrEmailOrPhone+" has been inactive, Please contact us");
+        }
+        String randomPassword = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 10);
+        user.setPassword(passwordEncoder.encode(randomPassword));
+        userRepository.save(user);
+        emailService.sendEmail(user,randomPassword);
     }
 
-    public UserResponseDto resetPassword(String emailOrPhone) {
-        User user = userRepository.findByEmailOrPhoneNumber(emailOrPhone, emailOrPhone).orElseThrow(() -> new UserNotFoundException("User not found"));
+    public UserResponseDto resetPassword(String userNameOrEmailOrPhone) {
+        User user = userRepository.findByEmailOrPhoneNumberOrUserName(userNameOrEmailOrPhone, userNameOrEmailOrPhone,userNameOrEmailOrPhone).orElseThrow(() -> new UserNotFoundException("User not found"));
+        if(Objects.nonNull(user) && user.getIsEnabled().equals(0)) {
+            throw  new UserInActiveException("User "+userNameOrEmailOrPhone+" has been inactive, Please contact us");
+        }
         return new UserResponseDto(user);
     }
 

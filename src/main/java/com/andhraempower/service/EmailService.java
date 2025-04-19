@@ -21,7 +21,7 @@ public class EmailService {
         this.templateEngine = templateEngine;
     }
 
-    public void sendEmail(User user) {
+    public void sendEmail(User user, String randomPassword) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -31,7 +31,7 @@ public class EmailService {
 
             Context context = new Context();
             context.setVariable("userFirstName", user.getFirstName());
-            context.setVariable("userPassword", user.getPassword());
+            context.setVariable("userPassword", randomPassword);
             context.setVariable("year", LocalDate.now().getYear());
 
             String emailBody = templateEngine.process("passwordRecoveryTemplate", context);

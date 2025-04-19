@@ -70,7 +70,7 @@ public class UserController {
     }
 
     @Operation(summary = "Deactivate a user (soft delete).")
-    @PutMapping("/users/{userId}/status")
+    @PutMapping("/{userId}/status")
     @ApiResponses(value = {
             @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
             @ApiResponse(responseCode = EmpowerConstants.BAD_REQUEST_CODE, description = EmpowerConstants.BAD_REQUEST_CODE_DESC),
@@ -98,8 +98,8 @@ public class UserController {
             @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = "User not found"),
             @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = "Unexpected server error")
     })
-    public ResponseEntity<String> forgotPassword(@RequestParam String identifier) {
-        userService.findByEmailOrPhone(identifier);
+    public ResponseEntity<String> forgotPassword(@RequestParam String userNameOrEmailOrPhone) {
+        userService.findByEmailOrPhone(userNameOrEmailOrPhone);
         return ResponseEntity.ok("Your password has been reset and sent to your email.");
     }
 
@@ -114,8 +114,8 @@ public class UserController {
             @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = "User not found"),
             @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = "Unexpected server error")
     })
-    public ResponseEntity<UserResponseDto> resetPassword(@RequestParam String identifier) {
-        return ResponseEntity.ok(userService.resetPassword(identifier));
+    public ResponseEntity<UserResponseDto> resetPassword(@RequestParam String userNameOrEmailOrPhone) {
+        return ResponseEntity.ok(userService.resetPassword(userNameOrEmailOrPhone));
     }
 
 }

@@ -309,8 +309,8 @@ public class ProjectService {
                     villageProject.setCommitteeAdded(projectStatusSteps.isCommitteeFormed());
                     villageProject.setEstimationCompleted(projectStatusSteps.isEstimationAdded());
                     villageProject.setBankAccountAdded(projectStatusSteps.isBankDetailsAdded());
-                    villageProject.setStatusCode(StatusEnum.WFD.name());
-                    villageProject.setStatus(StatusEnum.WFD.name());
+                    villageProject.setStatusCode(StatusEnum.WFS.name());
+                    villageProject.setStatus(StatusEnum.WFS.name());
                     projectRepository.save(villageProject);
                 }, () -> {throw new IllegalArgumentException("Project not found for the project id "+ projectId);});
 

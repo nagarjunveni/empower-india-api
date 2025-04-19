@@ -34,5 +34,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
                            @Param("districtId") Long districtId,
                            @Param("roleId") Long roleId);
 
-    Optional<User> findByEmailOrPhoneNumber(String email, String phone);
+    Optional<User> findByEmailOrPhoneNumberOrUserName(String email, String phone, String userName);
 }
