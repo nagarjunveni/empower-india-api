@@ -23,7 +23,7 @@ public class EmpowerConstants {
 
     public static final String PROJECT_FLOW = "PROJECT_FLOW";
 
-    public static final List<String> ENDPOINTS_FOR_ALL_USERS = List.of("/api/v1/login",
+    public static final List<String> ALLOW_LIST_URL_FOR_ALL_USERS = List.of("/api/v1/login",
             "/api/v1/committee/**",
             "/api/v1/contact-us/**",
             "/api/v1/dash-board/**",
@@ -45,7 +45,9 @@ public class EmpowerConstants {
             "/swagger-ui/**",
             "/swagger-ui.html",
             "/swagger-resources/**",
-            "/webjars/**"
+            "/webjars/**",
+            "/empower_andhra/api/v1/users",
+            "/empower_andhra/api/v1/contact-us/submit"
     );
 
 

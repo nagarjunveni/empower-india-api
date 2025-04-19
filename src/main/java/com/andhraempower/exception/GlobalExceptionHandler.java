@@ -3,10 +3,12 @@ package com.andhraempower.exception;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
+import java.util.Map;
+
+@ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
@@ -34,21 +36,27 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
-
     @ExceptionHandler(RequiredFieldMissingException.class)
     public ResponseEntity<String> handleRequiredField(RequiredFieldMissingException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MissingBearerTokenException.class)
-    public ResponseEntity<String> handleMissingBearerTokenException(MissingBearerTokenException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<Map<String, String>> handleMissingBearerTokenException(MissingBearerTokenException ex) {
+        return new ResponseEntity<>(generateErrorMessage(ex.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGlobalException(Exception ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+
+    private Map<String, String> generateErrorMessage(String message) {
+        return Map.of("errorMessage",message);
+    }
+
+
 
 
 }

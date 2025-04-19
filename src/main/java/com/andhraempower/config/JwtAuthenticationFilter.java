@@ -14,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,6 +27,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private SecurityCustomUserDetailsService securityCustomUserDetailsService;
+
+    @Autowired
+    private HandlerExceptionResolver handlerExceptionResolver;
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -40,7 +45,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         if (List.of("POST", "PUT", "DELETE").contains(method) && !hasBearerToken(authHeader)) {
-            throw new MissingBearerTokenException("Bearer token is required");
+            handlerExceptionResolver.resolveException(request, response, null, new MissingBearerTokenException("Bearer token is required"));
+            return;
         }
         String jwt = authHeader.substring(7);
         String username = tokenGenService.extractUsername(jwt);
@@ -64,6 +70,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean isPublicEndpoint(String path) {
-        return EmpowerConstants.ENDPOINTS_FOR_ALL_USERS.stream().anyMatch(path::endsWith);
+        return EmpowerConstants.ALLOW_LIST_URL_FOR_ALL_USERS.stream().anyMatch(path::endsWith);
     }
 }
