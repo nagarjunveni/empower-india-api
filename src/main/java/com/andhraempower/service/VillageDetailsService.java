@@ -36,13 +36,9 @@ public class VillageDetailsService {
 
     public VillageDemographics updateVillageDetails(VillageDemographics updatedVillage) {
 
-        Optional<VillageDemographics> entityOptional = villageDetailsRepository.findById(updatedVillage.getId());
+        VillageDemographics existingVillage = villageDetailsRepository.findById(updatedVillage.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Village not found with id: " + updatedVillage.getId()));
 
-        VillageDemographics existingVillage = entityOptional.orElse(null);
-
-        if (existingVillage == null) {
-            throw new EntityNotFoundException("Village not found with id: " + updatedVillage.getId());
-        }
         if (updatedVillage.getNoOfHouses() != null) {
             existingVillage.setNoOfHouses(updatedVillage.getNoOfHouses());
         }
@@ -278,14 +274,13 @@ public class VillageDetailsService {
         VillageDemographicsDTO villageDemographicsDTO = null;
 
 
-
         if (villageDemographics != null && villageDemographics.getVillageId() != null) {
             villageDemographicsDTO = VillageDemographicsDTO.fromEntity(villageDemographics);
             Page<ProjectResponseDto> projectResponseDtos = projectService.getProjectsByVillageId(Long.valueOf(villageDemographicsDTO.getVillageId()));
             if (!projectResponseDtos.isEmpty()) {
                 villageDemographicsDTO.setProjectResponseList(projectResponseDtos.getContent());
             }
-       }else{
+        } else {
             villageDemographicsDTO = new VillageDemographicsDTO();
             Page<ProjectResponseDto> projectResponseDtos = projectService.getProjectsByVillageId(Long.valueOf(villageId));
             if (!projectResponseDtos.isEmpty()) {

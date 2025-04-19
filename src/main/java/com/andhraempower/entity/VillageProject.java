@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class VillageProject {
+public class VillageProject extends Audit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,12 +55,6 @@ public class VillageProject {
 
     @Column(name = "status", nullable = false)
     private String status;
-
-    @Column(name = "created_by", nullable = false)
-    private String createdBy;
-
-    @Column(name = "last_updated_by", nullable = false)
-    private String lastUpdatedBy;
 
     @Column(name = "STATUS_CODE", nullable = false)
     private String statusCode;
@@ -102,6 +96,4 @@ public class VillageProject {
     @Lazy
     private List<VillageProjectDonar> villageProjectDonars;
 
-    @Column(name = "last_updated_date", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
-    private LocalDateTime lastUpdatedDate;
 }

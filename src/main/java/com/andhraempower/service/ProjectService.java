@@ -245,8 +245,6 @@ public class ProjectService {
                 .description(projectRequestDto.getDescription())
                 .village(village.get())
                 .status("Open")
-                .createdBy("Admin")
-                .lastUpdatedBy("Admin")
                 .estimateStartDate(projectRequestDto.getEstimateStartDate())
                 .estimateEndDate(projectRequestDto.getEstimateEndDate())
                 .actualStartDate(projectRequestDto.getActualStartDate())
