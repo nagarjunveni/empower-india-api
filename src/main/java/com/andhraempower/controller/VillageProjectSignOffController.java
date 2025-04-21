@@ -81,4 +81,19 @@ public class VillageProjectSignOffController {
         log.info("Deleting village project sign-off with ID: {}", id);
         service.delete(id);
     }
+
+    @Operation(summary = "Get village project sign-offs by project ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = EmpowerConstants.SUCCESS_CODE, description = EmpowerConstants.SUCCESS_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
+            @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
+    })
+
+    @GetMapping("/project/{projectId}")
+    public List<VillageProjectSignOff> getByProjectId(@PathVariable Integer projectId) {
+        log.info("Fetching sign-offs for project ID: {}", projectId);
+        return service.findByProjectId(projectId);
+    }
+
+
 }

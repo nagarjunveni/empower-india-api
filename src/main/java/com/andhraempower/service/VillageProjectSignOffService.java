@@ -55,4 +55,9 @@ public class VillageProjectSignOffService {
     public void delete(Integer id) {
         repository.deleteById(id);
     }
+
+    public List<VillageProjectSignOff> findByProjectId(Integer projectId) {
+        return repository.findByProjectId(projectId);
+    }
+
 }
