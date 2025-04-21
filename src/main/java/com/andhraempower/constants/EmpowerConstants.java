@@ -47,7 +47,8 @@ public class EmpowerConstants {
             "/swagger-resources/**",
             "/webjars/**",
             "/empower_andhra/api/v1/users",
-            "/empower_andhra/api/v1/contact-us/submit"
+            "/empower_andhra/api/v1/contact-us/submit",
+            "empower_andhra/api/v1/village-signoff"
     );
 
 
