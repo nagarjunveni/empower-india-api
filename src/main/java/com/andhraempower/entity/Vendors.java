@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "Vendor")
-public class Vendors {
+public class Vendors extends Audit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,4 +30,10 @@ public class Vendors {
 
     @Column(name = "project_id")
     private Long projectId;
+
+    @Column(name = "is_supplier")
+    private Integer isSupplier;
+
+    @Column(name = "material")
+    private String material;
 }

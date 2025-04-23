@@ -50,18 +50,8 @@ public class VendorsController {
             @ApiResponse(responseCode = EmpowerConstants.RESOURCE_NOT_FOUND_CODE, description = EmpowerConstants.RESOURCE_NOT_FOUND_CODE_DESC),
             @ApiResponse(responseCode = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE, description = EmpowerConstants.UNEXPECTED_SERVER_ERROR_CODE_DESC)
     })
-    public ResponseEntity<String> addVendors(@RequestBody Vendors vendors) {
-
-        try {
-            log.debug("Request for saving vendor : {}", vendors);
-            return VendorsService.addVendors(vendors);
-        }catch (IllegalArgumentException e){
-            log.error("IllegalArgumentException while saving the vendor", e);
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e){
-            log.error("Exception while saving the vendor", e);
-            return ResponseEntity.internalServerError().build();
-        }
+    public Vendors addVendors(@RequestBody Vendors vendors) {
+        return VendorsService.addVendors(vendors);
     }
 
     @Operation(summary = "Deletes a vendor from project")
